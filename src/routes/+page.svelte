@@ -9,6 +9,7 @@
 	import apple from 'svelte-awesome/icons/apple';
 	import linux from 'svelte-awesome/icons/linux';
 	import Button from '../components/Button.svelte';
+	import { base } from '$app/paths';
 
 	const releaseLink = 'https://github.com/Rigby-Foundation/nuggetvpn/releases/latest';
 
@@ -104,7 +105,7 @@
 					class="absolute -inset-1 rounded-3xl bg-gradient-to-b from-white to-zinc-700 opacity-40 blur transition duration-1000 group-hover:opacity-70 group-hover:duration-200"
 				></div>
 				<img
-					src="/icon.png"
+					src={`${base}/icon.png`}
 					alt="NuggetVPN Logo"
 					class="relative z-10 h-28 w-28 rounded-2xl shadow-2xl ring-1 ring-white/10"
 				/>

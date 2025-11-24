@@ -8,7 +8,7 @@
 
 Faster than light, private by design. Built with modern web technologies.
 
-[**Visit Website**](https://nuggetvpn.github.io) | [**Main Application Repo**](https://github.com/Rigby-Foundation/nuggetvpn)
+[**Visit Website**](https://rigby-foundation.github.io/nuggetvpn-www/) | [**Main Application Repo**](https://github.com/Rigby-Foundation/nuggetvpn)
 
 </div>
 
