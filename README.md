@@ -2,7 +2,8 @@
 
 <div align="center">
 
-![NuggetVPN Website Banner](static/icon.png) **The official landing page for the NuggetVPN desktop client.**
+![NuggetVPN Website Banner](static/icon.png) 
+**The official landing page for the NuggetVPN desktop client.**
 
 Faster than light, private by design. Built with modern web technologies.
 
