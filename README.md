@@ -45,8 +45,8 @@ Follow these steps to run the website locally for development.
 1.  **Clone the repository:**
 
     ```bash
-    git clone [https://github.com/Rigby-Foundation/nuggetvpn-website.git](https://github.com/Rigby-Foundation/nuggetvpn-website.git)
-    cd nuggetvpn-website
+    git clone [https://github.com/Rigby-Foundation/nuggetvpn-www.git](https://github.com/Rigby-Foundation/nuggetvpn-www.git)
+    cd nuggetvpn-www
     ```
 
 2.  **Install dependencies:**
