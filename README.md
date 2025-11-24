@@ -1,38 +1,68 @@
-# sv
+# NuggetVPN Website
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+<div align="center">
 
-## Creating a project
+![NuggetVPN Website Banner](static/icon.png) **The official landing page for the NuggetVPN desktop client.**
 
-If you're seeing this, you've probably already done this step. Congrats!
+Faster than light, private by design. Built with modern web technologies.
 
-```sh
-# create a new project in the current directory
-npx sv create
+[**Visit Website**](https://nuggetvpn.github.io) | [**Main Application Repo**](https://github.com/Rigby-Foundation/nuggetvpn)
 
-# create a new project in my-app
-npx sv create my-app
-```
+</div>
 
-## Developing
+---
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## About
 
-```sh
-npm run dev
+This repository hosts the source code for the NuggetVPN landing page. It is designed to be extremely fast, SEO-friendly, and visually consistent with the desktop application's "cyberpunk-reactor" aesthetic.
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
+The site serves as the primary hub for downloading the client across Windows, macOS, and Linux, and highlights key features of the software.
 
-## Building
+## Tech Stack
 
-To create a production version of your app:
+We use the bleeding edge of web development to ensure top performance and developer experience.
 
-```sh
-npm run build
-```
+* **Framework:** [SvelteKit](https://kit.svelte.dev/) (SSR + SSG)
+* **UI Library:** [Svelte 5](https://svelte.dev/) (Runes powered)
+* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
+* **Language:** TypeScript
+* **Icons:** [Lucide Svelte](https://lucide.dev/), [Svelte Awesome](https://github.com/RobBrazier/svelte-awesome)
+* **Fonts:** Space Grotesk (Headings) & Plus Jakarta Sans (Body)
 
-You can preview the production build with `npm run preview`.
+## Getting Started
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+Follow these steps to run the website locally for development.
+
+### Prerequisites
+
+* **Node.js**: LTS version recommended (v18+).
+* **Bun**: LTS version recommended (v1.1.40+).
+
+### Installation
+
+1.  **Clone the repository:**
+
+    ```bash
+    git clone [https://github.com/Rigby-Foundation/nuggetvpn-website.git](https://github.com/Rigby-Foundation/nuggetvpn-website.git)
+    cd nuggetvpn-website
+    ```
+
+2.  **Install dependencies:**
+
+    ```bash
+    bun install
+    # or if you use pnpm:
+    # pnpm install
+    ```
+
+3.  **Start the development server:**
+
+    ```bash
+    bun run dev
+    ```
+
+4.  Open your browser and navigate to `http://localhost:5173`.
+
+## Project Structure
+
+A standard SvelteKit project layout with a focus on organization.
