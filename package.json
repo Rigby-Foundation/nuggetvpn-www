@@ -38,6 +38,7 @@
 		"vite": "^7.1.10"
 	},
 	"dependencies": {
+		"@sveltejs/adapter-static": "^3.0.10",
 		"gsap": "^3.13.0",
 		"lucide-svelte": "^0.554.0",
 		"svelte-awesome": "^3.3.5"
