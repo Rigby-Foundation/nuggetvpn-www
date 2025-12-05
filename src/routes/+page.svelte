@@ -129,7 +129,7 @@
 				Modern, lightweight, and fast VPN client built with <span class="text-primary font-medium"
 					>Tauri v2</span
 				>
-				and <span class="text-primary font-medium">Svelte 5</span>.
+				and <span class="text-primary font-medium">React 19</span>.
 				<br class="hidden md:block" />Open Source and privacy-focused.
 			</h2>
 
@@ -239,7 +239,7 @@
 				</div>
 				<h3 class="font-heading mb-3 text-2xl font-bold text-white">Modern UI</h3>
 				<p class="leading-relaxed text-zinc-400">
-					Built with Svelte 5 for a reactive, clean, and beautiful interface with native dark mode
+					Built with React 19 for a reactive, clean, and beautiful interface with native dark mode
 					support and glassmorphism aesthetics.
 				</p>
 			</div>
