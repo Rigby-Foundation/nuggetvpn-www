@@ -6,7 +6,7 @@
 
 **The official landing page for the NuggetVPN desktop client.**
 
-Faster than light, private by design. Built with modern web technologies.
+A free VPN client for the subscription you already have.
 
 [**Visit Website**](https://nugget.rigby-foundation.org/) | [**Main Application Repo**](https://github.com/Rigby-Foundation/nuggetvpn)
 
@@ -16,9 +16,9 @@ Faster than light, private by design. Built with modern web technologies.
 
 ## About
 
-This repository hosts the source code for the NuggetVPN landing page. It is designed to be extremely fast, SEO-friendly, and visually consistent with the desktop application's "cyberpunk-reactor" aesthetic.
+This repository hosts the source code for the NuggetVPN landing page. It is a single static page that shows the app as it is (every screenshot is the real app) and offers the right download for the visitor's system.
 
-The site serves as the primary hub for downloading the client across Windows, macOS, and Linux, and highlights key features of the software.
+Downloads are read from the latest GitHub release in the browser, so a new release needs no change here. Until GitHub answers, every link points at the releases page.
 
 ## Tech Stack
 
@@ -28,8 +28,8 @@ We use the bleeding edge of web development to ensure top performance and develo
 * **UI Library:** [Svelte 5](https://svelte.dev/) (Runes powered)
 * **Styling:** [Tailwind CSS](https://tailwindcss.com/)
 * **Language:** TypeScript
-* **Icons:** [Lucide Svelte](https://lucide.dev/), [Svelte Awesome](https://github.com/RobBrazier/svelte-awesome)
-* **Fonts:** Space Grotesk (Headings) & Plus Jakarta Sans (Body)
+* **Icons:** [Lucide Svelte](https://lucide.dev/)
+* **Fonts:** Unbounded (the wordmark and headings, as in the app), Onest (body), Martian Mono (commands)
 
 ## Getting Started
 

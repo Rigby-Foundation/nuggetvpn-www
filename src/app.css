@@ -1,15 +1,65 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Space+Grotesk:wght@300..700&display=swap');
 @import 'tailwindcss';
 
+/*
+ * Nugget's palette: the fryer the page sits in, the crust of its surfaces,
+ * batter-cream text, and the app's own gold as the one accent.
+ */
+@theme {
+	--color-fryer: #15100b;
+	--color-crust: #211810;
+	--color-crust-hi: #2d2117;
+	--color-seam: #3b2c1f;
+	--color-batter: #f4e9d8;
+	--color-ash: #a59482;
+	--color-gold: #f2a83b;
+	--color-gold-hi: #f7c068;
+	--color-gold-deep: #9a5512;
+
+	--font-display: 'Unbounded', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'Onest', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+html {
+	background: var(--color-fryer);
+	color: var(--color-batter);
+	scroll-behavior: smooth;
+	-webkit-font-smoothing: antialiased;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	html {
+		scroll-behavior: auto;
+	}
+	*,
+	*::before,
+	*::after {
+		transition-duration: 0.01ms !important;
+		animation-duration: 0.01ms !important;
+	}
+}
+
 body {
-    font-family: 'Plus Jakarta Sans', sans-serif;
-    @apply bg-zinc-950 text-white;
+	font-family: var(--font-sans);
 }
 
-.space-grotesk {
-    font-family: 'Space Grotesk', sans-serif;
+::selection {
+	background: color-mix(in oklab, var(--color-gold) 40%, transparent);
 }
 
-h1, h2, h3 {
-    font-family: 'Space Grotesk', sans-serif;
+/* Keyboard focus is always visible, in the accent. */
+:focus-visible {
+	outline: 2px solid var(--color-gold);
+	outline-offset: 3px;
+	border-radius: 6px;
+}
+
+/* The wordmark: Unbounded, with the gold full stop the app uses. */
+.wordmark {
+	font-family: var(--font-display);
+	font-weight: 600;
+	letter-spacing: -0.02em;
+}
+.wordmark .dot {
+	color: var(--color-gold);
 }
