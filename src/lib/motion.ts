@@ -48,6 +48,8 @@ export async function startMotion(root: HTMLElement): Promise<Cleanup> {
 			gsap.fromTo(targets, from, {
 				x: 0,
 				y: 0,
+				xPercent: 0,
+				yPercent: 0,
 				rotate: 0,
 				scale: 1,
 				opacity: 1,
