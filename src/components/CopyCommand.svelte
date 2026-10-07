@@ -19,7 +19,9 @@
 </script>
 
 <div class="group flex min-w-0 items-stretch overflow-hidden rounded-xl border border-current/15 bg-black/20">
-	<code class="min-w-0 flex-1 overflow-x-auto px-3 py-2.5 font-mono text-[12px] leading-relaxed whitespace-nowrap select-all">
+	<!-- Scrolls sideways without a scrollbar: Windows draws one permanently,
+	     a grey bar across the gold. The fade says there is more; Copy takes all of it. -->
+	<code class="no-scrollbar min-w-0 flex-1 overflow-x-auto px-3 py-2.5 font-mono text-[12px] leading-relaxed whitespace-nowrap select-all [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)]">
 		{command}
 	</code>
 	<button
@@ -35,3 +37,12 @@
 		{/if}
 	</button>
 </div>
+
+<style>
+	.no-scrollbar {
+		scrollbar-width: none;
+	}
+	.no-scrollbar::-webkit-scrollbar {
+		display: none;
+	}
+</style>
