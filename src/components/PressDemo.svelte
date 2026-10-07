@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { springOnConnect } from '$lib/motion';
+
 	/**
 	 * The hero: the app's home screen, whose connect button can be pressed.
 	 * Two real screenshots, not connected and connected, crossfade; the page's
@@ -20,10 +22,18 @@
 		on: { x: 50, y: 25.3, d: 19 }
 	};
 	let where = $derived(on ? spot.on : spot.off);
+
+	// The window gives a little when it connects.
+	let frame: HTMLElement;
+	function press() {
+		on = !on;
+		if (on) springOnConnect(frame);
+	}
 </script>
 
 <figure class="relative">
 	<div
+		bind:this={frame}
 		class="relative overflow-hidden rounded-[14px] shadow-[0_40px_120px_-40px_rgba(242,168,59,0.35)] ring-1 ring-white/10"
 	>
 		<img
@@ -48,7 +58,7 @@
 			type="button"
 			aria-pressed={on}
 			aria-label={on ? strings.disconnect : strings.connect}
-			onclick={() => (on = !on)}
+			onclick={press}
 			class="press absolute -translate-x-1/2 -translate-y-1/2 cursor-pointer rounded-full transition-[top] duration-500 ease-out"
 			style="left:{where.x}%; top:{where.y}%; width:{where.d}%; aspect-ratio:1"
 		>

@@ -5,6 +5,7 @@
 	import CopyCommand from './CopyCommand.svelte';
 	import PressDemo from './PressDemo.svelte';
 	import { CONTENT, PATHS, SITE, type Lang } from '$lib/content';
+	import { startMotion } from '$lib/motion';
 	import {
 		detectSystem,
 		formatSize,
@@ -26,9 +27,13 @@
 	let release = $state<Release | null>(null);
 	let system = $state<System>('other');
 
+	let root: HTMLElement;
 	onMount(() => {
 		system = detectSystem();
 		latestRelease().then((r) => (release = r));
+		let stop = () => {};
+		startMotion(root).then((cleanup) => (stop = cleanup));
+		return () => stop();
 	});
 
 	const fileUrl = (id: FileId) => release?.files[id]?.url ?? RELEASES_URL;
@@ -124,13 +129,14 @@
 	{c.skip}
 </a>
 
-<div class="relative min-h-screen overflow-x-clip">
+<div class="relative min-h-screen overflow-x-clip" bind:this={root}>
 	<!-- The fryer's warmth, which rises when the demo connects. -->
-	<div
-		class="pointer-events-none absolute inset-x-0 top-0 h-[1100px] transition-opacity duration-700"
-		style="opacity:{on ? 1 : 0.45}; background: radial-gradient(60% 55% at 70% 35%, rgba(242,168,59,0.22), transparent 70%)"
-		aria-hidden="true"
-	></div>
+	<div data-m="glow" class="pointer-events-none absolute inset-x-0 top-0 h-[1100px]" aria-hidden="true">
+		<div
+			class="h-full w-full transition-opacity duration-700"
+			style="opacity:{on ? 1 : 0.45}; background: radial-gradient(60% 55% at 70% 35%, rgba(242,168,59,0.22), transparent 70%)"
+		></div>
+	</div>
 
 	<header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
 		<a href={PATHS[lang]} class="wordmark text-xl" aria-label={c.nav.home}>Nugget<span class="dot">.</span></a>
@@ -154,11 +160,16 @@
 		>
 			<div class="min-w-0">
 				<h1 class="font-display text-[2.4rem] leading-[1.04] font-semibold tracking-tight text-balance sm:text-5xl xl:text-[3.5rem]">
-					{c.hero.title}<span class="text-gold">.</span>
+					{#each c.hero.title.split(' ') as word, i (i)}<span class="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom"
+							><span data-m="hero-word" class="inline-block">{word}{#if i === c.hero.title.split(' ').length - 1}<span
+										class="text-gold">.</span
+									>{/if}</span
+							></span
+						>{' '}{/each}
 				</h1>
-				<p class="mt-6 max-w-md text-lg leading-relaxed text-ash">{c.hero.lead}</p>
+				<p data-m="hero-item" class="mt-6 max-w-md text-lg leading-relaxed text-ash">{c.hero.lead}</p>
 
-				<div class="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+				<div data-m="hero-item" class="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
 					<a
 						href={heroFile ? fileUrl(heroFile) : '#download'}
 						class="inline-flex items-center gap-2.5 rounded-full bg-gold px-6 py-3.5 font-semibold text-fryer shadow-[0_10px_40px_-10px_rgba(242,168,59,0.7)] transition-colors hover:bg-gold-hi"
@@ -172,14 +183,16 @@
 				</div>
 
 				{#if system !== 'android' && system !== 'other'}
-					<div class="mt-6 max-w-md text-ash">
+					<div data-m="hero-item" class="mt-6 max-w-md text-ash">
 						<p class="mb-2 text-xs">{c.hero.terminal}</p>
 						<CopyCommand command={heroCommand} strings={c.copy} />
 					</div>
 				{/if}
 			</div>
 
-			<PressDemo bind:on screens={c.screens} strings={c.demo} />
+			<div data-m="hero-demo" class="min-w-0">
+				<PressDemo bind:on screens={c.screens} strings={c.demo} />
+			</div>
 		</section>
 
 		<!-- Protocols -->
@@ -188,7 +201,7 @@
 				<p class="text-sm text-ash">{c.protocolsLead}</p>
 				<ul class="flex flex-wrap gap-2">
 					{#each protocols as protocol (protocol)}
-						<li class="rounded-full border border-seam bg-crust-hi px-3 py-1 font-mono text-[11px] text-batter">{protocol}</li>
+						<li data-m="chip" class="rounded-full border border-seam bg-crust-hi px-3 py-1 font-mono text-[11px] text-batter">{protocol}</li>
 					{/each}
 				</ul>
 			</div>
@@ -203,12 +216,15 @@
 				{#each c.showcase as row, i (row.title)}
 					{@const image = showcaseImages[i]}
 					<article
+						data-m="row"
+						data-side={i % 2 ? 'right' : 'left'}
 						class="grid grid-cols-[minmax(0,1fr)] items-center gap-10 {i % 2
 							? 'lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:[&>figure]:order-2'
 							: 'lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]'}"
 					>
-						<figure>
+						<figure data-m="row-fig" class="overflow-hidden rounded-[12px]">
 							<img
+								data-m="row-img"
 								src="{c.screens}/{image.file}"
 								alt={row.alt}
 								width={image.width}
@@ -218,11 +234,11 @@
 							/>
 						</figure>
 						<div>
-							<h3 class="font-display text-2xl leading-snug font-semibold tracking-tight">{row.title}</h3>
-							<p class="mt-4 leading-relaxed text-ash">{row.text}</p>
+							<h3 data-m="row-text" class="font-display text-2xl leading-snug font-semibold tracking-tight">{row.title}</h3>
+							<p data-m="row-text" class="mt-4 leading-relaxed text-ash">{row.text}</p>
 							<ul class="mt-6 space-y-2.5 text-sm">
 								{#each row.facts as fact (fact)}
-									<li class="flex gap-3">
+									<li data-m="row-text" class="flex gap-3">
 										<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" aria-hidden="true"></span>
 										<span>{fact}</span>
 									</li>
@@ -239,7 +255,7 @@
 				<p class="mt-4 max-w-2xl leading-relaxed text-ash">{c.looks.text}</p>
 				<div class="mt-10 grid gap-5 md:grid-cols-3">
 					{#each themeImages as file, i (file)}
-						<figure>
+						<figure data-m="theme">
 							<img
 								src="{c.screens}/{file}"
 								alt={c.looks.alts[i]}
@@ -261,7 +277,7 @@
 				<h2 class="font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.detailsTitle}</h2>
 				<dl class="mt-12 grid gap-x-12 gap-y-8 md:grid-cols-2">
 					{#each c.details as item (item.term)}
-						<div class="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-4 border-t border-seam pt-5">
+						<div data-m="detail" class="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-4 border-t border-seam pt-5">
 							<dt class="text-sm font-semibold text-gold">{item.term}</dt>
 							<dd class="text-sm leading-relaxed text-batter/85">{item.text}</dd>
 						</div>
@@ -274,7 +290,13 @@
 		<section id="download" class="scroll-mt-0 bg-gold text-fryer">
 			<div class="mx-auto max-w-6xl px-5 py-24 sm:px-8">
 				<div class="flex flex-wrap items-end justify-between gap-6">
-					<h2 class="wordmark text-5xl sm:text-7xl">{c.download.title}<span class="text-fryer">.</span></h2>
+					<h2 class="wordmark text-5xl sm:text-7xl" aria-label="{c.download.title}.">
+						<span class="-mb-[0.1em] inline-block overflow-hidden pb-[0.1em] align-bottom" aria-hidden="true"
+							>{#each [...c.download.title, '.'] as letter, i (i)}<span data-m="dl-letter" class="inline-block whitespace-pre"
+									>{letter}</span
+								>{/each}</span
+						>
+					</h2>
 					<p class="max-w-sm text-sm leading-relaxed">
 						{#if release?.version}{c.download.version(release.version)}{' '}{/if}{c.download.free}
 						<a href={RELEASES_URL} class="font-semibold underline underline-offset-4">{c.download.all}</a>
@@ -283,7 +305,7 @@
 
 				<div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
 					{#each c.download.groups as group (group.system)}
-						<div class="rounded-2xl bg-fryer/[0.06] p-5 ring-1 ring-fryer/15">
+						<div data-m="dl-card" class="rounded-2xl bg-fryer/[0.06] p-5 ring-1 ring-fryer/15">
 							<p class="font-display text-lg font-semibold">{group.system}</p>
 							<p class="text-xs opacity-70">{group.note}</p>
 							<ul class="mt-5 space-y-1.5">
@@ -322,7 +344,7 @@
 			<h2 id="faq-title" class="font-display text-3xl font-semibold tracking-tight">{c.faqTitle}</h2>
 			<div class="mt-10 divide-y divide-seam border-y border-seam">
 				{#each c.faq as item (item.q)}
-					<details class="group py-5">
+					<details data-m="faq" class="group py-5">
 						<summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-medium [&::-webkit-details-marker]:hidden">
 							{item.q}
 							<span class="font-mono text-gold transition-transform group-open:rotate-45" aria-hidden="true">+</span>

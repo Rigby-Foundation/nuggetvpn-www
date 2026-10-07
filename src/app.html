@@ -4,6 +4,16 @@
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#15100b" />
+		<script>
+			// Motion is set up before the first paint; see src/lib/motion.ts. If
+			// it never starts, show everything rather than leave the hero hidden.
+			if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+				document.documentElement.classList.add('motion');
+				setTimeout(function () {
+					if (!window.__motionReady) document.documentElement.classList.remove('motion');
+				}, 2500);
+			}
+		</script>
 
 		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icon.png" />
