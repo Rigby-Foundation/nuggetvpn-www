@@ -73,7 +73,7 @@
 				url: SITE + PATHS[lang],
 				downloadUrl: RELEASES_URL,
 				applicationCategory: 'SecurityApplication',
-				operatingSystem: 'Windows, macOS, Linux, Android',
+				operatingSystem: 'Windows, macOS, Linux, Android, iOS',
 				inLanguage: lang,
 				isAccessibleForFree: true,
 				license: 'https://www.gnu.org/licenses/gpl-3.0.html',
@@ -292,8 +292,8 @@
 				<div class="flex flex-wrap items-end justify-between gap-6">
 					<h2 class="wordmark text-5xl sm:text-7xl" aria-label="{c.download.title}.">
 						<span class="-mb-[0.1em] inline-block overflow-hidden pb-[0.1em] align-bottom" aria-hidden="true"
-							>{#each [...c.download.title, '.'] as letter, i (i)}<span data-m="dl-letter" class="inline-block whitespace-pre"
-									>{letter}</span
+							><!-- Letters grouped by word, so a narrow screen breaks the line between words, not inside one. -->{#each `${c.download.title}.`.split(' ') as word, w (w)}{#if w > 0}{' '}{/if}<span class="inline-block whitespace-nowrap"
+									>{#each [...word] as letter, i (i)}<span data-m="dl-letter" class="inline-block">{letter}</span>{/each}</span
 								>{/each}</span
 						>
 					</h2>
@@ -303,8 +303,9 @@
 					</p>
 				</div>
 
-				<div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-					{#each c.download.groups as group (group.system)}
+				<div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+					<!-- A system whose files the latest release lacks is left out. -->
+					{#each c.download.groups.filter((group) => !release || group.files.some((file) => release?.files[file.id])) as group (group.system)}
 						<div data-m="dl-card" class="rounded-2xl bg-fryer/[0.06] p-5 ring-1 ring-fryer/15">
 							<p class="font-display text-lg font-semibold">{group.system}</p>
 							<p class="text-xs opacity-70">{group.note}</p>
@@ -321,6 +322,12 @@
 									</li>
 								{/each}
 							</ul>
+							{#if group.warning}
+								<p class="mt-4 flex gap-2 rounded-lg bg-fryer/10 p-3 text-xs leading-relaxed">
+									<span aria-hidden="true" class="font-semibold">!</span>
+									<span>{group.warning}</span>
+								</p>
+							{/if}
 						</div>
 					{/each}
 				</div>

@@ -21,7 +21,8 @@ export type FileId =
 	| 'linux-deb'
 	| 'linux-rpm'
 	| 'linux-appimage'
-	| 'android-apk';
+	| 'android-apk'
+	| 'ios-ipa';
 
 /** Each file by the end of its name, as the release workflow names them. */
 const SUFFIXES: Record<FileId, string> = {
@@ -32,7 +33,8 @@ const SUFFIXES: Record<FileId, string> = {
 	'linux-deb': '-linux-amd64.deb',
 	'linux-rpm': '-linux-amd64.rpm',
 	'linux-appimage': '-linux-amd64.AppImage',
-	'android-apk': '-android.apk'
+	'android-apk': '-android.apk',
+	'ios-ipa': '-ios-unsigned.ipa'
 };
 
 export interface ReleaseFile {

@@ -49,7 +49,7 @@ export interface Content {
 		version: (v: string) => string;
 		free: string;
 		all: string;
-		groups: { system: string; note: string; files: { id: FileId; label: string }[] }[];
+		groups: { system: string; note: string; files: { id: FileId; label: string }[]; warning?: string }[];
 		ps: string;
 		sh: string;
 		scripts: string;
@@ -64,7 +64,7 @@ const en: Content = {
 	screens: '/screens',
 	title: 'NuggetVPN: free VLESS, Reality and Hysteria2 VPN client for Windows, macOS and Linux',
 	description:
-		'A free, open-source VPN client for your subscription. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard, and with Remnawave, Marzban and 3x-ui subscriptions. For Windows, macOS, Linux and Android.',
+		'A free, open-source VPN client for your subscription. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard, and with Remnawave, Marzban and 3x-ui subscriptions. For Windows, macOS, Linux and Android, and iOS if you sign it yourself.',
 	ogLocale: 'en_US',
 	skip: 'Skip to content',
 	nav: { screens: 'Screens', details: 'Details', download: 'Download', home: 'NuggetVPN home', other: 'Русский' },
@@ -173,7 +173,14 @@ const en: Content = {
 					{ id: 'linux-appimage', label: 'AppImage' }
 				]
 			},
-			{ system: 'Android', note: '7.0 and newer', files: [{ id: 'android-apk', label: '.apk' }] }
+			{ system: 'Android', note: '7.0 and newer', files: [{ id: 'android-apk', label: '.apk' }] },
+			{
+				system: 'iOS',
+				note: 'iPhone and iPad, 15 and newer',
+				files: [{ id: 'ios-ipa', label: 'Unsigned .ipa' }],
+				warning:
+					'Not on the App Store. You sign it yourself, with a certificate that allows VPN apps (network extensions). A free Apple ID’s certificate can’t: the app installs but never connects.'
+			}
 		],
 		ps: 'Windows, in PowerShell',
 		sh: 'macOS and Linux, in a terminal',
@@ -214,7 +221,7 @@ const ru: Content = {
 	screens: '/screens/ru',
 	title: 'NuggetVPN: бесплатный VPN-клиент для VLESS, Reality и Hysteria2 на Windows, macOS и Linux',
 	description:
-		'Бесплатный VPN-клиент с открытым кодом для вашей подписки. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard; подписки Remnawave, Marzban и 3x-ui. Для Windows, macOS, Linux и Android.',
+		'Бесплатный VPN-клиент с открытым кодом для вашей подписки. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard; подписки Remnawave, Marzban и 3x-ui. Для Windows, macOS, Linux и Android, а также iOS, если подписать самому.',
 	ogLocale: 'ru_RU',
 	skip: 'Перейти к содержанию',
 	nav: { screens: 'Экраны', details: 'Подробности', download: 'Скачать', home: 'NuggetVPN, главная', other: 'English' },
@@ -323,7 +330,14 @@ const ru: Content = {
 					{ id: 'linux-appimage', label: 'AppImage' }
 				]
 			},
-			{ system: 'Android', note: '7.0 и новее', files: [{ id: 'android-apk', label: '.apk' }] }
+			{ system: 'Android', note: '7.0 и новее', files: [{ id: 'android-apk', label: '.apk' }] },
+			{
+				system: 'iOS',
+				note: 'iPhone и iPad, 15 и новее',
+				files: [{ id: 'ios-ipa', label: 'Неподписанный .ipa' }],
+				warning:
+					'Не из App Store. Подписываете сами, сертификатом, который разрешает VPN (Network Extensions). Сертификат бесплатного Apple ID не подойдёт: приложение установится, но не подключится.'
+			}
 		],
 		ps: 'Windows, в PowerShell',
 		sh: 'macOS и Linux, в терминале',
