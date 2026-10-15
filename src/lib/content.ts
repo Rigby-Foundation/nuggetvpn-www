@@ -4,6 +4,11 @@
  * Russian is not an afterthought: most people looking for a client for their
  * VLESS or Hysteria2 subscription search in Russian, so the Russian page is
  * written for them, with its own title, description and screenshots.
+ *
+ * The page is written for people who just want their VPN to work, not for
+ * people who know what a protocol is. The technical names stay in the title,
+ * the description and the protocol strip, where search engines and the
+ * curious find them.
  */
 import type { FileId } from './release';
 
@@ -37,7 +42,11 @@ export interface Content {
 		captionOn: string;
 	};
 	copy: { copy: string; copied: string; label: string };
+	themes: { button: string; site: string; light: string; dark: string; palette: string };
+	/** Not shown: names the protocol strip for screen readers. */
 	protocolsLead: string;
+	/** Shouted across the giant band between the screens and the details. */
+	slogans: string[];
 	screensTitle: string;
 	screensLead: string;
 	showcase: { title: string; text: string; alt: string; facts: string[] }[];
@@ -64,13 +73,13 @@ const en: Content = {
 	screens: '/screens',
 	title: 'NuggetVPN: free VLESS, Reality and Hysteria2 VPN client for Windows, macOS and Linux',
 	description:
-		'A free, open-source VPN client for your subscription. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard, and with Remnawave, Marzban and 3x-ui subscriptions. For Windows, macOS, Linux and Android, and iOS if you sign it yourself.',
+		'A free app for the VPN you already have: paste the link your provider gave you and press one button. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard. For Windows, macOS, Linux and Android.',
 	ogLocale: 'en_US',
 	skip: 'Skip to content',
 	nav: { screens: 'Screens', details: 'Details', download: 'Download', home: 'NuggetVPN home', other: 'Русский' },
 	hero: {
-		title: 'Paste your subscription. Press the button',
-		lead: 'NuggetVPN is a free VPN client, not a VPN service. It connects through the subscription your provider gave you, with any of the common protocols, and stays out of the way.',
+		title: 'A VPN app with just one button',
+		lead: 'NuggetVPN is a free app for the VPN you already have. Copy the link your VPN provider sent you, paste it in, press the big button. That’s all there is to it.',
 		download: {
 			windows: 'Download for Windows',
 			macos: 'Download for macOS',
@@ -79,7 +88,7 @@ const en: Content = {
 			other: 'Download'
 		},
 		platforms: 'Free for Windows, macOS, Linux and Android',
-		terminal: 'Or install from a terminal:'
+		terminal: 'Comfortable with a terminal? Install with one command:'
 	},
 	demo: {
 		altOff: 'NuggetVPN’s home screen, not connected: a large connect button with Aurora VPN’s subscription and the Helsinki server below it.',
@@ -87,47 +96,49 @@ const en: Content = {
 		connect: 'Connect (demo)',
 		disconnect: 'Disconnect (demo)',
 		captionOff: 'Go on, press it.',
-		captionOn: 'That’s the app. Everything else is optional.'
+		captionOn: 'You’re connected. That’s the whole app, really.'
 	},
 	copy: { copy: 'Copy', copied: 'Copied', label: 'Copy the command' },
-	protocolsLead: 'Works with any provider that speaks',
-	screensTitle: 'One button on top, everything else underneath',
-	screensLead: 'Most days you’ll only see the home screen. These are the parts that are there when you want them.',
+	themes: { button: 'Theme', site: 'This site', light: 'Light', dark: 'Dark', palette: 'Palettes' },
+	protocolsLead: 'Supported protocols',
+	slogans: ['Free', 'No account', 'No tracking', 'No ads', 'Open source', 'One button'],
+	screensTitle: 'One big button. Everything else only if you want it',
+	screensLead: 'Most days you’ll just press the button. Here’s what’s there when you need more.',
 	showcase: [
 		{
-			title: 'Every server, with its flag and its ping',
-			text: 'Your provider’s servers in one list, each with its country and its latency. Pick one, or leave it on Automatic and Nugget picks the fastest.',
+			title: 'Pick a country, or let Nugget pick the fastest',
+			text: 'All your provider’s servers in one list, each with its flag and how quickly it answers. Leave it on Automatic and Nugget connects you to the quickest one.',
 			alt: 'The server list: Frankfurt, Amsterdam, Helsinki, Stockholm and Warsaw, each with its flag, address, protocol and ping.',
 			facts: [
-				'Flags read from the server’s name, drawn on every system',
-				'Test all, star favourites, sort by name or latency',
-				'Servers the chosen core can’t run are marked, with the reason'
+				'See which servers are fast before you connect',
+				'Test them all with one tap, star your favourites',
+				'Servers that won’t work are marked, with the reason why'
 			]
 		},
 		{
-			title: 'Choose what goes through the tunnel',
-			text: 'Routing is a graph you can read: apps, sites, countries or rule lists on the left, where their traffic goes on the right. Draw a line to change it.',
+			title: 'Choose which apps use the VPN',
+			text: 'Send Telegram and Discord through the VPN and leave everything else on your normal connection. It’s a picture you can read: apps and sites on the left, where they go on the right. Drag a line to change it.',
 			alt: 'The routing graph: Telegram, Discord and Spotify, and three domains, going through the VPN; addresses in Russia going direct.',
 			facts: [
-				'By app, domain, IP, port, protocol, country or downloaded list',
-				'Through the VPN, straight out, blocked, or through a specific server',
-				'Live counts show which rule is catching what'
+				'Choose by app, by website or by country',
+				'Through the VPN, on your normal connection, or blocked',
+				'See live which rule is handling what'
 			]
 		},
 		{
-			title: 'Your plan, and your provider’s news',
-			text: 'Data used, days left and the provider’s support link sit next to the button. When the provider posts a message, it shows at the top until you hide it.',
+			title: 'Always know how much you have left',
+			text: 'Data used, days left and your provider’s support link are right next to the button. When your provider has news, it shows at the top.',
 			alt: 'The home screen with a message from the provider at the top, and the subscription showing 35 GB of 186 GB used and 214 days left.',
 			facts: [
-				'Usage and expiry from the subscription’s own headers',
-				'Announcements, folded or dismissed, with the provider’s link',
-				'Subscriptions refresh on their own every six hours'
+				'Data and expiry date come straight from your provider',
+				'Hide a message once you’ve read it',
+				'Your server list keeps itself up to date'
 			]
 		}
 	],
 	looks: {
 		title: 'Make it look like yours',
-		text: 'Over thirty themes, from Paper to Dracula and Catppuccin, or your own with a picture behind it. Pick the accent colour, the corner radius and how fast things move, and put the navigation at the bottom, the top or either side.',
+		text: 'Over thirty themes, light and dark, or your own with a picture behind it. Change the colours, how round the corners are, how fast things move, and where the menu sits.',
 		labels: ['Paper', 'Violet, inset sidebar', 'First start'],
 		alts: [
 			'NuggetVPN in the light Paper theme.',
@@ -137,30 +148,30 @@ const en: Content = {
 	},
 	detailsTitle: 'The details',
 	details: [
-		{ term: 'Cores', text: 'Built-in sing-box, official sing-box, mihomo and Xray, all inside the app. Switch in Settings; Nugget tells you what each one can’t do.' },
-		{ term: 'Connecting', text: 'Automatic mode measures every server and connects to the fastest one, in under two seconds.' },
-		{ term: 'Staying up', text: 'Reconnects on its own when the tunnel drops. The kill switch blocks traffic until it’s back.' },
-		{ term: 'Subscriptions', text: 'Subscription links, single server links, sing-box and Clash configs, QR codes and screenshots of them.' },
-		{ term: 'Watching', text: 'Every open connection with the app behind it, live speeds, a speed test, and traffic by app over the week.' },
-		{ term: 'Plugins', text: 'Themes, fonts, routing setups and pages of their own, each in a sandbox, with only the access you allow.' },
-		{ term: 'Updates', text: 'Found and installed from inside the app on Windows and macOS, then it restarts by itself.' },
+		{ term: 'Connecting', text: 'Press the button and Nugget finds the fastest server and connects, usually in under two seconds.' },
+		{ term: 'If it drops', text: 'Nugget reconnects by itself. Until it’s back, nothing leaves your computer unprotected.' },
+		{ term: 'Adding a VPN', text: 'Paste a link, scan a QR code, or open a screenshot of one. Setup files from other VPN apps work too.' },
+		{ term: 'Stats', text: 'Live speed, a built-in speed test, and how much data each app used this week.' },
+		{ term: 'Updates', text: 'On Windows and macOS, Nugget updates itself and restarts. Nothing to download by hand.' },
 		{ term: 'Languages', text: 'فارسی, English, Русский, Українська, 中文 and 日本語.' },
-		{ term: 'Privacy', text: 'No account and no telemetry. It asks GitHub for updates and checks your public IP, and both can be turned off.' },
-		{ term: 'License', text: 'GPL-3.0. Every line is on GitHub, and you can build it yourself.' }
+		{ term: 'Privacy', text: 'No account, no tracking. It only checks for updates and looks up your IP address, and you can turn both off.' },
+		{ term: 'Add-ons', text: 'Extra themes, fonts and ready-made settings. Each one only gets the access you give it.' },
+		{ term: 'Under the hood', text: 'sing-box, mihomo and Xray, all built in. You’ll never need to touch them, but you can switch in Settings.' },
+		{ term: 'Open source', text: 'All the code is on GitHub under the GPL-3.0, so anyone can check exactly what it does.' }
 	],
 	download: {
 		title: 'Get Nugget',
 		version: (v) => `Version ${v}.`,
 		free: 'Free, no account, nothing to sign up for.',
-		all: 'All releases',
+		all: 'All versions',
 		groups: [
 			{
 				system: 'Windows',
 				note: '10 and 11, 64-bit',
 				files: [
-					{ id: 'windows-installer', label: 'Installer' },
+					{ id: 'windows-installer', label: 'Installer (recommended)' },
 					{ id: 'windows-silent', label: 'Silent installer' },
-					{ id: 'windows-zip', label: 'Portable .zip' }
+					{ id: 'windows-zip', label: 'No-install .zip' }
 				]
 			},
 			{ system: 'macOS', note: 'Apple silicon and Intel', files: [{ id: 'macos-dmg', label: 'Disk image (.dmg)' }] },
@@ -173,44 +184,44 @@ const en: Content = {
 					{ id: 'linux-appimage', label: 'AppImage' }
 				]
 			},
-			{ system: 'Android', note: '7.0 and newer', files: [{ id: 'android-apk', label: '.apk' }] },
+			{ system: 'Android', note: '7.0 and newer', files: [{ id: 'android-apk', label: 'App (.apk)' }] },
 			{
 				system: 'iOS',
 				note: 'iPhone and iPad, 15 and newer',
 				files: [{ id: 'ios-ipa', label: 'Unsigned .ipa' }],
 				warning:
-					'Not on the App Store. You sign it yourself, with a certificate that allows VPN apps (network extensions). A free Apple ID’s certificate can’t: the app installs but never connects.'
+					'For people who know how to sideload. It’s not on the App Store, so you install it yourself with a paid Apple developer account. With a free Apple ID it installs but won’t connect.'
 			}
 		],
 		ps: 'Windows, in PowerShell',
 		sh: 'macOS and Linux, in a terminal',
-		scripts: 'Both fetch the latest release from GitHub, check it against its published checksum, install it and start the app. Run them again to update.'
+		scripts: 'Both download the latest version from GitHub, check it hasn’t been tampered with, install it and open it. Run them again to update.'
 	},
 	faqTitle: 'Questions',
 	faq: [
 		{
 			q: 'Is NuggetVPN a VPN service?',
-			a: 'No. It’s the app you connect with. You bring a subscription or a server from a provider you choose, and Nugget connects through it.'
+			a: 'No, it’s the app. The VPN itself comes from a provider you choose; after you pay, they usually send you a link. Paste that link into Nugget and it connects you.'
 		},
 		{
-			q: 'Will it work with my provider?',
-			a: 'If your provider gives you a subscription link or links like vless://, vmess://, trojan:// or ss://, yes. That covers the usual panels, Remnawave, Marzban and 3x-ui among them.'
+			q: 'Will it work with my VPN?',
+			a: 'Almost certainly. If your provider gave you a link to paste into an app (it often starts with https://, vless:// or ss://), Nugget can use it.'
 		},
 		{
-			q: 'I use v2rayN, Hiddify, Happ or Nekoray. Can I switch?',
-			a: 'Yes. Paste the same subscription link you use there; servers, data left and the expiry date come across from the provider as they are.'
+			q: 'I already use Hiddify, Happ, v2rayN or Nekoray. Can I switch?',
+			a: 'Yes. Paste the same link you used there, and all your servers, data left and expiry date come with it.'
 		},
 		{
 			q: 'Is it free?',
-			a: 'Yes, and it stays that way: it’s free software under the GPL-3.0. There are no accounts, no ads and no paid tier.'
+			a: 'Yes, completely. No ads, no account, no paid version. The code is open, so it stays that way.'
 		},
 		{
 			q: 'macOS says the app is damaged.',
-			a: 'The app isn’t signed with an Apple developer certificate, so macOS blocks it. Run xattr -cr /Applications/NuggetVPN.app in Terminal, or install with the command above, which avoids it.'
+			a: 'It isn’t. macOS just doesn’t recognise the developer, so it blocks the app. Open Terminal, paste xattr -cr /Applications/NuggetVPN.app, press Return, and open the app again. Installing with the terminal command above avoids this.'
 		},
 		{
-			q: 'What about iPhone?',
-			a: 'An iOS version is being tested. It isn’t on the releases page yet.'
+			q: 'Why isn’t it on the App Store?',
+			a: 'Apple only lets VPN apps onto the App Store from registered companies with a paid developer account, and it removes VPN apps in some countries, Russia among them, when the government asks. So for now the iPhone version is a file you install yourself, which takes some know-how.'
 		}
 	],
 	footer: { by: 'by the Rigby Foundation, under the GPL-3.0.', source: 'Source on GitHub' }
@@ -221,13 +232,13 @@ const ru: Content = {
 	screens: '/screens/ru',
 	title: 'NuggetVPN: бесплатный VPN-клиент для VLESS, Reality и Hysteria2 на Windows, macOS и Linux',
 	description:
-		'Бесплатный VPN-клиент с открытым кодом для вашей подписки. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard; подписки Remnawave, Marzban и 3x-ui. Для Windows, macOS, Linux и Android, а также iOS, если подписать самому.',
+		'Бесплатное приложение для VPN, который у вас уже есть: вставьте ссылку от провайдера и нажмите одну кнопку. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard. Для Windows, macOS, Linux и Android.',
 	ogLocale: 'ru_RU',
 	skip: 'Перейти к содержанию',
 	nav: { screens: 'Экраны', details: 'Подробности', download: 'Скачать', home: 'NuggetVPN, главная', other: 'English' },
 	hero: {
-		title: 'Вставьте подписку. Нажмите кнопку',
-		lead: 'NuggetVPN — бесплатный VPN-клиент, а не VPN-сервис. Он подключается через подписку, которую вам дал провайдер, по любому из распространённых протоколов, и не мешает.',
+		title: 'VPN-приложение с одной кнопкой',
+		lead: 'NuggetVPN — бесплатное приложение для VPN, который у вас уже есть. Скопируйте ссылку, которую прислал ваш VPN-провайдер, вставьте её и нажмите большую кнопку. Больше ничего не нужно.',
 		download: {
 			windows: 'Скачать для Windows',
 			macos: 'Скачать для macOS',
@@ -236,7 +247,7 @@ const ru: Content = {
 			other: 'Скачать'
 		},
 		platforms: 'Бесплатно для Windows, macOS, Linux и Android',
-		terminal: 'Или установите из терминала:'
+		terminal: 'Умеете пользоваться терминалом? Установка одной командой:'
 	},
 	demo: {
 		altOff: 'Главный экран NuggetVPN без подключения: большая кнопка подключения, под ней подписка Aurora VPN и сервер в Хельсинки.',
@@ -244,47 +255,49 @@ const ru: Content = {
 		connect: 'Подключиться (демо)',
 		disconnect: 'Отключиться (демо)',
 		captionOff: 'Давайте, нажмите.',
-		captionOn: 'Это и есть приложение. Остальное — по желанию.'
+		captionOn: 'Вы подключены. По сути, это всё приложение.'
 	},
 	copy: { copy: 'Копировать', copied: 'Скопировано', label: 'Скопировать команду' },
-	protocolsLead: 'Работает с любым провайдером, если у него',
-	screensTitle: 'Сверху одна кнопка, всё остальное — под ней',
-	screensLead: 'Обычно вы видите только главный экран. Вот что есть, когда понадобится.',
+	themes: { button: 'Тема', site: 'Этот сайт', light: 'Светлые', dark: 'Тёмные', palette: 'Палитры' },
+	protocolsLead: 'Поддерживаемые протоколы',
+	slogans: ['Бесплатно', 'Без аккаунта', 'Без слежки', 'Без рекламы', 'Открытый код', 'Одна кнопка'],
+	screensTitle: 'Одна большая кнопка. Всё остальное — если захотите',
+	screensLead: 'Обычно вы просто нажимаете кнопку. Вот что есть, когда нужно больше.',
 	showcase: [
 		{
-			title: 'Каждый сервер — с флагом и пингом',
-			text: 'Все серверы провайдера одним списком, у каждого — страна и задержка. Выберите сервер или оставьте «Автоматически», и Nugget выберет самый быстрый.',
+			title: 'Выберите страну — или пусть Nugget выберет самую быструю',
+			text: 'Все серверы провайдера одним списком, у каждого флаг и скорость ответа. Оставьте «Автоматически», и Nugget подключит вас к самому быстрому.',
 			alt: 'Список серверов: Франкфурт, Амстердам, Хельсинки, Стокгольм и Варшава, у каждого флаг, адрес, протокол и пинг.',
 			facts: [
-				'Флаг берётся из названия сервера и рисуется на любой системе',
-				'Проверка всех серверов, избранное, сортировка по имени или задержке',
-				'Серверы, которые выбранное ядро не поддерживает, помечены — с причиной'
+				'Видно, какие серверы быстрые, ещё до подключения',
+				'Проверка всех серверов одним нажатием, избранное',
+				'Серверы, которые не заработают, помечены — с причиной'
 			]
 		},
 		{
-			title: 'Решайте, что идёт через туннель',
-			text: 'Маршрутизация — это понятная схема: слева приложения, сайты, страны или списки правил, справа — куда идёт их трафик. Проведите линию, чтобы изменить.',
+			title: 'Решайте, какие приложения идут через VPN',
+			text: 'Пустите Telegram и Discord через VPN, а всё остальное оставьте на обычном интернете. Это понятная схема: слева приложения и сайты, справа — куда они идут. Проведите линию, чтобы изменить.',
 			alt: 'Схема маршрутизации: Telegram, Discord, Spotify и три домена идут через VPN, адреса в России — напрямую.',
 			facts: [
-				'По приложению, домену, IP, порту, протоколу, стране или скачанному списку',
-				'Через VPN, напрямую, заблокировать или через конкретный сервер',
-				'Счётчики в реальном времени показывают, какое правило что ловит'
+				'По приложению, по сайту или по стране',
+				'Через VPN, через обычный интернет или заблокировать',
+				'В реальном времени видно, какое правило что обрабатывает'
 			]
 		},
 		{
-			title: 'Ваш тариф и новости провайдера',
-			text: 'Расход трафика, сколько дней осталось и ссылка на поддержку — рядом с кнопкой. Когда провайдер публикует сообщение, оно видно сверху, пока вы его не скроете.',
+			title: 'Всегда видно, сколько осталось',
+			text: 'Расход трафика, сколько дней осталось и ссылка на поддержку провайдера — рядом с кнопкой. Когда у провайдера новости, они видны сверху.',
 			alt: 'Главный экран с сообщением провайдера сверху; подписка: использовано 35 ГБ из 186 ГБ, осталось 214 дней.',
 			facts: [
-				'Трафик и срок — из заголовков самой подписки',
-				'Объявления можно свернуть или скрыть, со ссылкой провайдера',
-				'Подписки обновляются сами каждые шесть часов'
+				'Трафик и срок действия — прямо от провайдера',
+				'Прочитанное сообщение можно скрыть',
+				'Список серверов обновляется сам'
 			]
 		}
 	],
 	looks: {
 		title: 'Сделайте его своим',
-		text: 'Больше тридцати тем, от «Бумаги» до Dracula и Catppuccin, или своя — с картинкой на фоне. Выберите акцентный цвет, скругление углов и скорость анимаций, а навигацию поставьте снизу, сверху или сбоку.',
+		text: 'Больше тридцати тем, светлых и тёмных, или своя — с картинкой на фоне. Меняйте цвета, скругление углов, скорость анимаций и место, где находится меню.',
 		labels: ['Бумага', 'Фиолетовая, встроенная боковая панель', 'Первый запуск'],
 		alts: [
 			'NuggetVPN в светлой теме «Бумага».',
@@ -294,30 +307,30 @@ const ru: Content = {
 	},
 	detailsTitle: 'Подробности',
 	details: [
-		{ term: 'Ядра', text: 'Встроенный sing-box, официальный sing-box, mihomo и Xray — все внутри приложения. Переключаются в настройках; Nugget подскажет, что каждое не умеет.' },
-		{ term: 'Подключение', text: 'В автоматическом режиме Nugget замеряет все серверы и подключается к самому быстрому меньше чем за две секунды.' },
-		{ term: 'Без обрывов', text: 'Переподключается сам, если туннель упал. Kill switch блокирует трафик, пока соединение не вернётся.' },
-		{ term: 'Подписки', text: 'Ссылки на подписку, ссылки на отдельные серверы, конфиги sing-box и Clash, QR-коды и их скриншоты.' },
-		{ term: 'Наблюдение', text: 'Все открытые соединения с приложением за каждым, скорость в реальном времени, тест скорости и трафик по приложениям за неделю.' },
-		{ term: 'Плагины', text: 'Темы, шрифты, наборы правил и собственные страницы — каждый в песочнице и только с тем доступом, который вы разрешили.' },
-		{ term: 'Обновления', text: 'На Windows и macOS находятся и ставятся прямо из приложения, после чего оно перезапускается само.' },
+		{ term: 'Подключение', text: 'Нажмите кнопку — Nugget найдёт самый быстрый сервер и подключится, обычно меньше чем за две секунды.' },
+		{ term: 'Если отвалилось', text: 'Nugget переподключится сам. Пока связи нет, ничего не уйдёт с компьютера в обход VPN.' },
+		{ term: 'Добавить VPN', text: 'Вставьте ссылку, отсканируйте QR-код или откройте его скриншот. Файлы настроек из других VPN-приложений тоже подойдут.' },
+		{ term: 'Статистика', text: 'Скорость в реальном времени, встроенный тест скорости и сколько трафика потратило каждое приложение за неделю.' },
+		{ term: 'Обновления', text: 'На Windows и macOS Nugget обновляется сам и перезапускается. Ничего не нужно скачивать вручную.' },
 		{ term: 'Языки', text: 'Русский, Українська, English, 中文, 日本語 и فارسی' },
-		{ term: 'Приватность', text: 'Без аккаунта и телеметрии. Приложение спрашивает GitHub об обновлениях и проверяет ваш внешний IP — и то и другое можно отключить.' },
-		{ term: 'Лицензия', text: 'GPL-3.0. Весь код на GitHub, можно собрать самому.' }
+		{ term: 'Приватность', text: 'Без аккаунта и без слежки. Приложение только проверяет обновления и узнаёт ваш IP-адрес — и то и другое можно отключить.' },
+		{ term: 'Дополнения', text: 'Дополнительные темы, шрифты и готовые настройки. Каждое получает только тот доступ, который вы разрешили.' },
+		{ term: 'Внутри', text: 'sing-box, mihomo и Xray, все встроены. Трогать их не нужно, но переключиться можно в настройках.' },
+		{ term: 'Открытый код', text: 'Весь код на GitHub под лицензией GPL-3.0 — любой может проверить, что именно делает приложение.' }
 	],
 	download: {
 		title: 'Скачать Nugget',
 		version: (v) => `Версия ${v}.`,
 		free: 'Бесплатно, без аккаунта и регистрации.',
-		all: 'Все релизы',
+		all: 'Все версии',
 		groups: [
 			{
 				system: 'Windows',
 				note: '10 и 11, 64-бит',
 				files: [
-					{ id: 'windows-installer', label: 'Установщик' },
+					{ id: 'windows-installer', label: 'Установщик (рекомендуем)' },
 					{ id: 'windows-silent', label: 'Тихий установщик' },
-					{ id: 'windows-zip', label: 'Портативный .zip' }
+					{ id: 'windows-zip', label: '.zip без установки' }
 				]
 			},
 			{ system: 'macOS', note: 'Apple silicon и Intel', files: [{ id: 'macos-dmg', label: 'Образ диска (.dmg)' }] },
@@ -330,44 +343,44 @@ const ru: Content = {
 					{ id: 'linux-appimage', label: 'AppImage' }
 				]
 			},
-			{ system: 'Android', note: '7.0 и новее', files: [{ id: 'android-apk', label: '.apk' }] },
+			{ system: 'Android', note: '7.0 и новее', files: [{ id: 'android-apk', label: 'Приложение (.apk)' }] },
 			{
 				system: 'iOS',
 				note: 'iPhone и iPad, 15 и новее',
 				files: [{ id: 'ios-ipa', label: 'Неподписанный .ipa' }],
 				warning:
-					'Не из App Store. Подписываете сами, сертификатом, который разрешает VPN (Network Extensions). Сертификат бесплатного Apple ID не подойдёт: приложение установится, но не подключится.'
+					'Для тех, кто умеет ставить приложения в обход App Store. Устанавливаете сами, с платным аккаунтом разработчика Apple. С бесплатным Apple ID приложение установится, но не подключится.'
 			}
 		],
 		ps: 'Windows, в PowerShell',
 		sh: 'macOS и Linux, в терминале',
-		scripts: 'Обе команды берут последний релиз с GitHub, сверяют его с опубликованной контрольной суммой, устанавливают и запускают приложение. Запустите их снова, чтобы обновиться.'
+		scripts: 'Обе команды скачивают последнюю версию с GitHub, проверяют, что её никто не подменил, устанавливают и запускают. Запустите снова, чтобы обновиться.'
 	},
 	faqTitle: 'Вопросы',
 	faq: [
 		{
 			q: 'NuggetVPN — это VPN-сервис?',
-			a: 'Нет. Это приложение, через которое вы подключаетесь. Подписку или сервер вы берёте у провайдера, которого выбрали сами, а Nugget подключается через него.'
+			a: 'Нет, это приложение. Сам VPN вы покупаете у провайдера, которого выбрали; после оплаты он обычно присылает ссылку. Вставьте её в Nugget — и он вас подключит.'
 		},
 		{
-			q: 'Он будет работать с моим провайдером?',
-			a: 'Если провайдер даёт ссылку на подписку или ссылки вида vless://, vmess://, trojan:// или ss:// — да. Это обычные панели, включая Remnawave, Marzban и 3x-ui.'
+			q: 'Он будет работать с моим VPN?',
+			a: 'Почти наверняка. Если провайдер дал ссылку, которую нужно вставить в приложение (часто она начинается с https://, vless:// или ss://), Nugget с ней справится.'
 		},
 		{
-			q: 'Я пользуюсь v2rayN, Hiddify, Happ или Nekoray. Можно перейти?',
-			a: 'Да. Вставьте ту же ссылку на подписку, что и там: серверы, остаток трафика и срок действия придут от провайдера как есть.'
+			q: 'Я пользуюсь Hiddify, Happ, v2rayN или Nekoray. Можно перейти?',
+			a: 'Да. Вставьте ту же ссылку, что и там: все серверы, остаток трафика и срок действия подтянутся сами.'
 		},
 		{
 			q: 'Это бесплатно?',
-			a: 'Да, и так и останется: это свободная программа под лицензией GPL-3.0. Никаких аккаунтов, рекламы и платных тарифов.'
+			a: 'Да, полностью. Без рекламы, без аккаунта, без платной версии. Код открыт, так что так и останется.'
 		},
 		{
 			q: 'macOS пишет, что приложение повреждено.',
-			a: 'Приложение не подписано сертификатом разработчика Apple, поэтому macOS его блокирует. Выполните в Терминале xattr -cr /Applications/NuggetVPN.app или установите командой выше — тогда этой проблемы не будет.'
+			a: 'Оно не повреждено: macOS просто не знает разработчика и блокирует приложение. Откройте Терминал, вставьте xattr -cr /Applications/NuggetVPN.app, нажмите Return и откройте приложение снова. Если ставить командой выше, этой проблемы не будет.'
 		},
 		{
-			q: 'А для iPhone?',
-			a: 'Версия для iOS сейчас тестируется. В релизах её пока нет.'
+			q: 'Почему его нет в App Store?',
+			a: 'Apple пускает VPN-приложения в App Store только от зарегистрированных компаний с платным аккаунтом разработчика и удаляет их в некоторых странах, в том числе в России, по требованию властей. Поэтому пока версия для iPhone — это файл, который вы устанавливаете сами, и для этого нужны определённые навыки.'
 		}
 	],
 	footer: { by: 'от Rigby Foundation, под лицензией GPL-3.0.', source: 'Код на GitHub' }

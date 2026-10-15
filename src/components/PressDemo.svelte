@@ -23,18 +23,20 @@
 	};
 	let where = $derived(on ? spot.on : spot.off);
 
-	// The window gives a little when it connects.
+	// The window kicks when it connects, and a ring of light blows out of the button.
 	let frame: HTMLElement;
+	let burst: HTMLElement;
 	function press() {
 		on = !on;
-		if (on) springOnConnect(frame);
+		if (on) springOnConnect(frame, burst);
 	}
 </script>
 
 <figure class="relative">
 	<div
 		bind:this={frame}
-		class="relative overflow-hidden rounded-[14px] shadow-[0_40px_120px_-40px_rgba(242,168,59,0.35)] ring-1 ring-white/10"
+		data-m="demo-frame"
+		class="relative will-change-transform overflow-hidden rounded-[14px] shadow-[0_40px_120px_-40px_color-mix(in_oklab,var(--color-gold)_35%,transparent)] ring-1 ring-white/10"
 	>
 		<img
 			src="{screens}/home-idle.webp"
@@ -65,6 +67,7 @@
 			{#if !on}
 				<span class="ring-pulse pointer-events-none absolute inset-0 rounded-full" aria-hidden="true"></span>
 			{/if}
+			<span bind:this={burst} class="pointer-events-none absolute inset-0 rounded-full border-4 border-gold opacity-0" aria-hidden="true"></span>
 		</button>
 	</div>
 	<figcaption class="mt-4 text-center text-sm text-ash">
@@ -79,24 +82,24 @@
 	}
 	/* A slow halo that says "this is a button", until it has been pressed. */
 	.ring-pulse {
-		box-shadow: 0 0 0 0 rgba(242, 168, 59, 0.45);
+		box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-gold) 45%, transparent);
 		animation: pulse 2.4s ease-out infinite;
 	}
 	@keyframes pulse {
 		0% {
-			box-shadow: 0 0 0 0 rgba(242, 168, 59, 0.45);
+			box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-gold) 45%, transparent);
 		}
 		70% {
-			box-shadow: 0 0 0 22px rgba(242, 168, 59, 0);
+			box-shadow: 0 0 0 22px color-mix(in oklab, var(--color-gold) 0%, transparent);
 		}
 		100% {
-			box-shadow: 0 0 0 0 rgba(242, 168, 59, 0);
+			box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-gold) 0%, transparent);
 		}
 	}
 	@media (prefers-reduced-motion: reduce) {
 		.ring-pulse {
 			animation: none;
-			box-shadow: 0 0 0 3px rgba(242, 168, 59, 0.45);
+			box-shadow: 0 0 0 3px color-mix(in oklab, var(--color-gold) 45%, transparent);
 		}
 	}
 </style>

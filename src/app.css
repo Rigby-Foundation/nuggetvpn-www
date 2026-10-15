@@ -20,8 +20,32 @@
 	--font-mono: 'Martian Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 }
 
+/*
+ * The app's themes (src/lib/themes.ts): each sets only its page colour,
+ * surface and accent on <html>; everything else is mixed from those and from
+ * whether the theme is light or dark.
+ */
+html[data-theme] {
+	--t-fg: color-mix(in oklab, white 90%, var(--t-bg));
+	--color-fryer: var(--t-bg);
+	--color-crust: color-mix(in oklab, var(--t-bg) 55%, var(--t-surface));
+	--color-crust-hi: var(--t-surface);
+	--color-seam: color-mix(in oklab, var(--t-surface) 80%, var(--t-fg));
+	--color-batter: var(--t-fg);
+	--color-ash: color-mix(in oklab, var(--t-fg) 62%, var(--t-bg));
+	--color-gold: var(--t-accent);
+	--color-gold-hi: color-mix(in oklab, var(--t-accent) 80%, white);
+	--color-gold-deep: color-mix(in oklab, var(--t-accent) 60%, black);
+}
+html[data-theme='light'] {
+	--t-fg: color-mix(in oklab, black 85%, var(--t-bg));
+	--color-gold-hi: color-mix(in oklab, var(--t-accent) 85%, black);
+	color-scheme: light;
+}
+
 html {
 	background: var(--color-fryer);
+	transition: background-color 0.3s;
 	color: var(--color-batter);
 	scroll-behavior: smooth;
 	-webkit-font-smoothing: antialiased;
@@ -36,6 +60,12 @@ html {
 	*::after {
 		transition-duration: 0.01ms !important;
 		animation-duration: 0.01ms !important;
+	}
+	/* Marquees and loops stand still rather than flicker. */
+	.marquee-track,
+	.shine::after,
+	.grain {
+		animation: none !important;
 	}
 }
 
@@ -53,7 +83,8 @@ body {
  * does).
  */
 html.motion [data-m^='hero'],
-html.motion [data-m='glow'] {
+html.motion [data-m='glow'],
+html.motion [data-m='bar'] {
 	opacity: 0;
 }
 
@@ -72,4 +103,76 @@ html.motion [data-m='glow'] {
 }
 .wordmark .dot {
 	color: var(--color-gold);
+}
+
+/*
+ * Marquees: the track holds the list twice and slides by half its width, so
+ * the loop is seamless. CSS runs it; motion.ts only speeds it up and skews it
+ * with the scroll.
+ */
+.marquee {
+	overflow: hidden;
+	mask-image: linear-gradient(to right, transparent, black 6%, black 94%, transparent);
+}
+.marquee-track {
+	display: flex;
+	width: max-content;
+	animation: marquee var(--marquee-speed, 30s) linear infinite;
+	animation-direction: var(--marquee-dir, normal);
+}
+@keyframes marquee {
+	to {
+		transform: translateX(-50%);
+	}
+}
+
+/* A streak of light across the main buttons every few seconds. */
+.shine {
+	position: relative;
+	overflow: hidden;
+	isolation: isolate;
+}
+.shine::after {
+	content: '';
+	position: absolute;
+	inset: -20% auto -20% -60%;
+	width: 40%;
+	transform: skewX(-20deg);
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+	animation: shine 3.2s ease-in-out infinite;
+	pointer-events: none;
+}
+@keyframes shine {
+	0%,
+	55% {
+		left: -60%;
+	}
+	100% {
+		left: 130%;
+	}
+}
+
+/* Film grain over the whole fryer, shifting so it never sits still. */
+.grain {
+	position: fixed;
+	inset: -50%;
+	z-index: 60;
+	pointer-events: none;
+	opacity: 0.06;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+	animation: grain 0.8s steps(4) infinite;
+}
+@keyframes grain {
+	0% {
+		transform: translate(0, 0);
+	}
+	25% {
+		transform: translate(-4%, 3%);
+	}
+	50% {
+		transform: translate(3%, -5%);
+	}
+	75% {
+		transform: translate(-2%, -2%);
+	}
 }

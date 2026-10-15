@@ -5,6 +5,20 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#15100b" />
 		<script>
+			// The theme picked on the page last time, on before the first paint;
+			// see src/lib/themes.ts.
+			try {
+				var t = JSON.parse(localStorage.getItem('nugget-theme') || 'null');
+				if (t) {
+					var h = document.documentElement;
+					h.dataset.theme = t.mode;
+					h.style.setProperty('--t-bg', t.bg);
+					h.style.setProperty('--t-surface', t.surface);
+					h.style.setProperty('--t-accent', t.accent);
+				}
+			} catch (e) {}
+		</script>
+		<script>
 			// Motion is set up before the first paint; see src/lib/motion.ts. If
 			// it never starts, show everything rather than leave the hero hidden.
 			if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {

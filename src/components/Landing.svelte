@@ -4,6 +4,7 @@
 
 	import CopyCommand from './CopyCommand.svelte';
 	import PressDemo from './PressDemo.svelte';
+	import ThemePicker from './ThemePicker.svelte';
 	import { CONTENT, PATHS, SITE, type Lang } from '$lib/content';
 	import { startMotion } from '$lib/motion';
 	import {
@@ -130,20 +131,31 @@
 </a>
 
 <div class="relative min-h-screen overflow-x-clip" bind:this={root}>
+	<!-- How far down the page you are, in gold along the top. -->
+	<div data-m="bar" class="fixed inset-x-0 top-0 z-50 h-[3px] origin-left scale-x-0 bg-gold shadow-[0_0_12px_color-mix(in_oklab,var(--color-gold)_80%,transparent)]" aria-hidden="true"></div>
+	<!-- A warm spot that follows the pointer on desktops. -->
+	<div
+		data-m="cursor"
+		class="pointer-events-none fixed top-0 left-0 z-0 hidden h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 [background:radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_14%,transparent),transparent_65%)] [@media(pointer:fine)]:block"
+		aria-hidden="true"
+	></div>
+	<div class="grain" aria-hidden="true"></div>
+
 	<!-- The fryer's warmth, which rises when the demo connects. -->
-	<div data-m="glow" class="pointer-events-none absolute inset-x-0 top-0 h-[1100px]" aria-hidden="true">
+	<div data-m="glow" class="pointer-events-none absolute inset-x-0 top-0 h-[1900px]" aria-hidden="true">
 		<div
 			class="h-full w-full transition-opacity duration-700"
-			style="opacity:{on ? 1 : 0.45}; background: radial-gradient(60% 55% at 70% 35%, rgba(242,168,59,0.22), transparent 70%)"
+			style="opacity:{on ? 1 : 0.45}; background: radial-gradient(70% 45% at 50% 55%, color-mix(in oklab, var(--color-gold) 22%, transparent), transparent 70%)"
 		></div>
 	</div>
 
-	<header class="relative z-10 mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
+	<header class="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
 		<a href={PATHS[lang]} class="wordmark text-xl" aria-label={c.nav.home}>Nugget<span class="dot">.</span></a>
 		<nav aria-label="Main" class="flex items-center gap-1 text-sm text-ash sm:gap-2">
 			<a href="#screens" class="hidden rounded-lg px-3 py-2 transition-colors hover:text-batter md:block">{c.nav.screens}</a>
 			<a href="#details" class="hidden rounded-lg px-3 py-2 transition-colors hover:text-batter md:block">{c.nav.details}</a>
 			<a href="#download" class="rounded-lg px-3 py-2 transition-colors hover:text-batter">{c.nav.download}</a>
+			<ThemePicker {lang} strings={c.themes} />
 			<a href={PATHS[other]} hreflang={other} lang={other} class="rounded-lg px-3 py-2 transition-colors hover:text-batter">
 				{c.nav.other}
 			</a>
@@ -155,11 +167,9 @@
 
 	<main id="main" class="relative z-10">
 		<!-- Hero -->
-		<section
-			class="mx-auto grid max-w-6xl grid-cols-[minmax(0,1fr)] items-center gap-12 px-5 pt-8 pb-24 sm:px-8 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:pt-16"
-		>
-			<div class="min-w-0">
-				<h1 class="font-display text-[2.4rem] leading-[1.04] font-semibold tracking-tight text-balance sm:text-5xl xl:text-[3.5rem]">
+		<section class="mx-auto flex min-h-[calc(100svh-5rem)] max-w-4xl flex-col items-center justify-center px-5 pt-8 pb-24 text-center sm:px-8">
+			<div class="flex min-w-0 flex-col items-center">
+				<h1 class="font-display text-[2.6rem] leading-[1.04] font-semibold tracking-tight text-balance sm:text-6xl xl:text-7xl">
 					{#each c.hero.title.split(' ') as word, i (i)}<span class="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom"
 							><span data-m="hero-word" class="inline-block">{word}{#if i === c.hero.title.split(' ').length - 1}<span
 										class="text-gold">.</span
@@ -167,12 +177,13 @@
 							></span
 						>{' '}{/each}
 				</h1>
-				<p data-m="hero-item" class="mt-6 max-w-md text-lg leading-relaxed text-ash">{c.hero.lead}</p>
+				<p data-m="hero-item" class="mt-7 max-w-xl text-lg leading-relaxed text-ash">{c.hero.lead}</p>
 
-				<div data-m="hero-item" class="mt-9 flex flex-wrap items-center gap-x-5 gap-y-3">
+				<div data-m="hero-item" class="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
 					<a
+						data-m="magnet"
 						href={heroFile ? fileUrl(heroFile) : '#download'}
-						class="inline-flex items-center gap-2.5 rounded-full bg-gold px-6 py-3.5 font-semibold text-fryer shadow-[0_10px_40px_-10px_rgba(242,168,59,0.7)] transition-colors hover:bg-gold-hi"
+						class="shine inline-flex items-center gap-2.5 rounded-full bg-gold px-6 py-3.5 font-semibold text-fryer shadow-[0_10px_40px_-10px_color-mix(in_oklab,var(--color-gold)_70%,transparent)] transition-colors hover:bg-gold-hi"
 					>
 						<Download size={18} aria-hidden="true" />
 						{c.hero.download[system]}
@@ -183,23 +194,25 @@
 				</div>
 
 				{#if system !== 'android' && system !== 'other'}
-					<div data-m="hero-item" class="mt-6 max-w-md text-ash">
+					<div data-m="hero-item" class="mt-8 w-full max-w-md text-ash">
 						<p class="mb-2 text-xs">{c.hero.terminal}</p>
 						<CopyCommand command={heroCommand} strings={c.copy} />
 					</div>
 				{/if}
 			</div>
+		</section>
 
-			<div data-m="hero-demo" class="min-w-0">
+		<!-- The app itself, big enough to press. -->
+		<section class="mx-auto max-w-5xl px-5 pb-28 sm:px-8 [perspective:1400px]">
+			<div data-m="demo" class="min-w-0">
 				<PressDemo bind:on screens={c.screens} strings={c.demo} />
 			</div>
 		</section>
 
 		<!-- Protocols -->
 		<section aria-label={c.protocolsLead} class="border-y border-seam bg-crust/60">
-			<div class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-5 py-6 sm:px-8">
-				<p class="text-sm text-ash">{c.protocolsLead}</p>
-				<ul class="flex flex-wrap gap-2">
+			<div class="mx-auto max-w-6xl px-5 py-6 sm:px-8">
+				<ul class="flex flex-wrap justify-center gap-2">
 					{#each protocols as protocol (protocol)}
 						<li data-m="chip" class="rounded-full border border-seam bg-crust-hi px-3 py-1 font-mono text-[11px] text-batter">{protocol}</li>
 					{/each}
@@ -209,7 +222,7 @@
 
 		<!-- Screens -->
 		<section id="screens" class="mx-auto max-w-6xl scroll-mt-8 px-5 py-24 sm:px-8">
-			<h2 class="max-w-2xl font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.screensTitle}</h2>
+			<h2 data-m="title" class="max-w-2xl font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.screensTitle}</h2>
 			<p class="mt-4 max-w-xl text-ash">{c.screensLead}</p>
 
 			<div class="mt-16 space-y-24">
@@ -271,10 +284,28 @@
 			</div>
 		</section>
 
+		<!-- The loud part: what Nugget is, in letters too big for the screen. -->
+		<section aria-label={c.slogans.join(', ')} class="relative z-10 -my-4 -rotate-2 border-y-2 border-gold bg-fryer py-6 sm:py-10">
+			{#each [0, 1] as line (line)}
+				<div class="marquee [mask-image:none]" style="--marquee-speed:{line ? 46 : 38}s; --marquee-dir:{line ? 'reverse' : 'normal'}" aria-hidden="true">
+					<div data-m="slogan" class="marquee-track">
+						{#each [0, 1] as copy (copy)}
+							<p class="flex shrink-0 items-center font-display text-6xl leading-[1.1] font-bold tracking-tight whitespace-nowrap uppercase sm:text-8xl">
+								{#each c.slogans as slogan, i (slogan)}
+									<span class={(i + line) % 2 ? 'text-gold' : 'text-batter'}>{slogan}</span>
+									<span class="mx-6 text-gold sm:mx-10">✦</span>
+								{/each}
+							</p>
+						{/each}
+					</div>
+				</div>
+			{/each}
+		</section>
+
 		<!-- Details -->
 		<section id="details" class="scroll-mt-8 border-t border-seam bg-crust/40">
 			<div class="mx-auto max-w-6xl px-5 py-24 sm:px-8">
-				<h2 class="font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.detailsTitle}</h2>
+				<h2 data-m="title" class="font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.detailsTitle}</h2>
 				<dl class="mt-12 grid gap-x-12 gap-y-8 md:grid-cols-2">
 					{#each c.details as item (item.term)}
 						<div data-m="detail" class="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-4 border-t border-seam pt-5">
@@ -287,7 +318,7 @@
 		</section>
 
 		<!-- Download: the one gold band -->
-		<section id="download" class="scroll-mt-0 bg-gold text-fryer">
+		<section id="download" data-m="band" class="scroll-mt-0 bg-gold text-fryer">
 			<div class="mx-auto max-w-6xl px-5 py-24 sm:px-8">
 				<div class="flex flex-wrap items-end justify-between gap-6">
 					<h2 class="wordmark text-5xl sm:text-7xl" aria-label="{c.download.title}.">
@@ -348,7 +379,7 @@
 
 		<!-- FAQ -->
 		<section aria-labelledby="faq-title" class="mx-auto max-w-3xl px-5 py-24 sm:px-8">
-			<h2 id="faq-title" class="font-display text-3xl font-semibold tracking-tight">{c.faqTitle}</h2>
+			<h2 data-m="title" id="faq-title" class="font-display text-3xl font-semibold tracking-tight">{c.faqTitle}</h2>
 			<div class="mt-10 divide-y divide-seam border-y border-seam">
 				{#each c.faq as item (item.q)}
 					<details data-m="faq" class="group py-5">
