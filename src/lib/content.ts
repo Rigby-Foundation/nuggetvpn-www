@@ -73,7 +73,7 @@ const en: Content = {
 	screens: '/screens',
 	title: 'NuggetVPN: free VLESS, Reality and Hysteria2 VPN client for Windows, macOS and Linux',
 	description:
-		'A free app for the VPN you already have: paste the link your provider gave you and press one button. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard. For Windows, macOS, Linux and Android.',
+		'A free app for the VPN you already have: a clean, one-button alternative to Happ, Hiddify and v2rayN for desktop. Paste the link your provider gave you and press one button. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard. For Windows, macOS, Linux and Android.',
 	ogLocale: 'en_US',
 	skip: 'Skip to content',
 	nav: { screens: 'Screens', details: 'Details', download: 'Download', home: 'NuggetVPN home', other: 'Русский' },
@@ -150,7 +150,7 @@ const en: Content = {
 	details: [
 		{ term: 'Connecting', text: 'Press the button and Nugget finds the fastest server and connects, usually in under two seconds.' },
 		{ term: 'If it drops', text: 'Nugget reconnects by itself. Until it’s back, nothing leaves your computer unprotected.' },
-		{ term: 'Adding a VPN', text: 'Paste a link, scan a QR code, or open a screenshot of one. Setup files from other VPN apps work too.' },
+		{ term: 'Switching', text: 'Works with the exact same links as Happ, Hiddify, v2rayN or NekoRay. Paste your link, scan a QR code, or import config files with one click.' },
 		{ term: 'Stats', text: 'Live speed, a built-in speed test, and how much data each app used this week.' },
 		{ term: 'Updates', text: 'On Windows and macOS, Nugget updates itself and restarts. Nothing to download by hand.' },
 		{ term: 'Languages', text: 'فارسی, English, Русский, Українська, 中文 and 日本語.' },
@@ -208,8 +208,12 @@ const en: Content = {
 			a: 'Almost certainly. If your provider gave you a link to paste into an app (it often starts with https://, vless:// or ss://), Nugget can use it.'
 		},
 		{
-			q: 'I already use Hiddify, Happ, v2rayN or Nekoray. Can I switch?',
-			a: 'Yes. Paste the same link you used there, and all your servers, data left and expiry date come with it.'
+			q: 'Is NuggetVPN an alternative to Happ, Hiddify, v2rayN or NekoRay?',
+			a: 'Yes. Nugget is designed as a much simpler, one-button alternative to Happ, Hiddify, v2rayN and NekoRay for desktop. If your provider gave you a link or config for any of those apps, paste the exact same link into Nugget — your servers, traffic balance and expiry date will transfer seamlessly.'
+		},
+		{
+			q: 'Looking for a Happ alternative on PC or Windows?',
+			a: 'Happ is great on mobile, but if you want the same simple, one-tap experience on your computer, NuggetVPN is the ideal desktop companion. It uses the exact same VLESS, Reality and Hysteria2 subscription links without complicated setups.'
 		},
 		{
 			q: 'Is it free?',
@@ -232,7 +236,7 @@ const ru: Content = {
 	screens: '/screens/ru',
 	title: 'NuggetVPN: бесплатный VPN-клиент для VLESS, Reality и Hysteria2 на Windows, macOS и Linux',
 	description:
-		'Бесплатное приложение для VPN, который у вас уже есть: вставьте ссылку от провайдера и нажмите одну кнопку. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard. Для Windows, macOS, Linux и Android.',
+		'Бесплатное приложение для VPN, который у вас уже есть: удобный аналог Happ, Hiddify и v2rayN для компьютера. Вставьте ссылку от провайдера и нажмите одну кнопку. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard. Для Windows, macOS, Linux и Android.',
 	ogLocale: 'ru_RU',
 	skip: 'Перейти к содержанию',
 	nav: { screens: 'Экраны', details: 'Подробности', download: 'Скачать', home: 'NuggetVPN, главная', other: 'English' },
@@ -309,7 +313,7 @@ const ru: Content = {
 	details: [
 		{ term: 'Подключение', text: 'Нажмите кнопку — Nugget найдёт самый быстрый сервер и подключится, обычно меньше чем за две секунды.' },
 		{ term: 'Если отвалилось', text: 'Nugget переподключится сам. Пока связи нет, ничего не уйдёт с компьютера в обход VPN.' },
-		{ term: 'Добавить VPN', text: 'Вставьте ссылку, отсканируйте QR-код или откройте его скриншот. Файлы настроек из других VPN-приложений тоже подойдут.' },
+		{ term: 'Переход', text: 'Работает с теми же ссылками, что и Happ, Hiddify, v2rayN или NekoRay: вставьте ссылку от провайдера, отсканируйте QR-код или откройте скриншот.' },
 		{ term: 'Статистика', text: 'Скорость в реальном времени, встроенный тест скорости и сколько трафика потратило каждое приложение за неделю.' },
 		{ term: 'Обновления', text: 'На Windows и macOS Nugget обновляется сам и перезапускается. Ничего не нужно скачивать вручную.' },
 		{ term: 'Языки', text: 'Русский, Українська, English, 中文, 日本語 и فارسی' },
@@ -367,8 +371,12 @@ const ru: Content = {
 			a: 'Почти наверняка. Если провайдер дал ссылку, которую нужно вставить в приложение (часто она начинается с https://, vless:// или ss://), Nugget с ней справится.'
 		},
 		{
-			q: 'Я пользуюсь Hiddify, Happ, v2rayN или Nekoray. Можно перейти?',
-			a: 'Да. Вставьте ту же ссылку, что и там: все серверы, остаток трафика и срок действия подтянутся сами.'
+			q: 'NuggetVPN — это аналог Happ, Hiddify, v2rayN или NekoRay?',
+			a: 'Да. Nugget — это удобный аналог и простая замена Happ, Hiddify, v2rayN и NekoRay для компьютера. Если провайдер прислал вам ссылку или ключ для любого из этих приложений, вставьте её в Nugget — все серверы, остаток трафика и срок действия перенесутся автоматически.'
+		},
+		{
+			q: 'Ищете Happ для ПК или Windows?',
+			a: 'Happ удобен на смартфонах, но на компьютере пользователям часто не хватает такой же простоты. NuggetVPN — это отличный аналог Happ на Windows, macOS и Linux: та же одна большая кнопка, те же ссылки от вашего провайдера (VLESS, Reality, Hysteria2) и никакой ручной возни.'
 		},
 		{
 			q: 'Это бесплатно?',
