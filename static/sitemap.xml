@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 	<url>
-		<loc>https://nugget.rigby-foundation.org/</loc>
+		<loc>https://nugget.rigby.lol/</loc>
 		<lastmod>2026-10-07</lastmod>
-		<xhtml:link rel="alternate" hreflang="en" href="https://nugget.rigby-foundation.org/" />
-		<xhtml:link rel="alternate" hreflang="ru" href="https://nugget.rigby-foundation.org/ru/" />
-		<xhtml:link rel="alternate" hreflang="x-default" href="https://nugget.rigby-foundation.org/" />
+		<xhtml:link rel="alternate" hreflang="en" href="https://nugget.rigby.lol/" />
+		<xhtml:link rel="alternate" hreflang="ru" href="https://nugget.rigby.lol/ru/" />
+		<xhtml:link rel="alternate" hreflang="x-default" href="https://nugget.rigby.lol/" />
 	</url>
 	<url>
-		<loc>https://nugget.rigby-foundation.org/ru/</loc>
+		<loc>https://nugget.rigby.lol/ru/</loc>
 		<lastmod>2026-10-07</lastmod>
-		<xhtml:link rel="alternate" hreflang="en" href="https://nugget.rigby-foundation.org/" />
-		<xhtml:link rel="alternate" hreflang="ru" href="https://nugget.rigby-foundation.org/ru/" />
-		<xhtml:link rel="alternate" hreflang="x-default" href="https://nugget.rigby-foundation.org/" />
+		<xhtml:link rel="alternate" hreflang="en" href="https://nugget.rigby.lol/" />
+		<xhtml:link rel="alternate" hreflang="ru" href="https://nugget.rigby.lol/ru/" />
+		<xhtml:link rel="alternate" hreflang="x-default" href="https://nugget.rigby.lol/" />
 	</url>
 </urlset>

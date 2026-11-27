@@ -1,406 +1,431 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { ArrowDown, Download, Github } from 'lucide-svelte';
-
-	import CopyCommand from './CopyCommand.svelte';
-	import PressDemo from './PressDemo.svelte';
-	import ThemePicker from './ThemePicker.svelte';
-	import { CONTENT, PATHS, SITE, type Lang } from '$lib/content';
-	import { startMotion } from '$lib/motion';
+	import {
+		Apple,
+		Bot,
+		ChevronDown,
+		CircleHelp,
+		Download,
+		GitBranch,
+		Github,
+		Layers,
+		Link2,
+		Laptop,
+		Route,
+		ShieldCheck,
+		SlidersHorizontal,
+		Smartphone,
+		Terminal
+	} from 'lucide-svelte';
+	import {
+		CONTENT,
+		PATHS,
+		PLATFORMS,
+		PLATFORM_NAMES,
+		SCREENS,
+		SITE,
+		type Lang,
+		type Screen
+	} from '$lib/content';
 	import {
 		detectSystem,
+		DOCS_URL,
 		formatSize,
 		INSTALL_PS,
 		INSTALL_SH,
 		latestRelease,
+		LICENSE_URL,
+		PLATFORM_FILES,
 		RELEASES_URL,
 		REPO_URL,
+		WINDOWS_EXTRAS,
 		type FileId,
 		type Release,
 		type System
 	} from '$lib/release';
+	import CopyCommand from './CopyCommand.svelte';
+	import RoutingSignals from './RoutingSignals.svelte';
+	import ThemePicker from './ThemePicker.svelte';
 
 	let { lang }: { lang: Lang } = $props();
-	let c = $derived(CONTENT[lang]);
-	let other = $derived<Lang>(lang === 'en' ? 'ru' : 'en');
-
-	let on = $state(false);
-	let release = $state<Release | null>(null);
-	let system = $state<System>('other');
-
-	let root: HTMLElement;
-	onMount(() => {
-		system = detectSystem();
-		latestRelease().then((r) => (release = r));
-		let stop = () => {};
-		startMotion(root).then((cleanup) => (stop = cleanup));
-		return () => stop();
-	});
-
-	const fileUrl = (id: FileId) => release?.files[id]?.url ?? RELEASES_URL;
-	const fileSize = (id: FileId) => {
-		const file = release?.files[id];
-		return file ? formatSize(file.size) : '';
-	};
-
-	// The first button: the visitor's own system.
-	const primaryFile: Record<System, FileId | null> = {
-		windows: 'windows-installer',
-		macos: 'macos-dmg',
-		linux: 'linux-appimage',
-		android: 'android-apk',
-		other: null
-	};
-	let heroFile = $derived(primaryFile[system]);
-	let heroCommand = $derived(system === 'windows' ? INSTALL_PS : INSTALL_SH);
-
-	const protocols = ['VLESS + Reality', 'VMess', 'Trojan', 'Shadowsocks', 'Hysteria2', 'TUIC', 'WireGuard', 'SOCKS', 'SSH'];
-	const showcaseImages = [
-		{ id: 'servers', file: 'servers.webp', width: 2360, height: 1520 },
-		{ id: 'routing', file: 'routing.webp', width: 2720, height: 1720 },
-		{ id: 'plan', file: 'home-announce.webp', width: 2360, height: 1520 }
-	];
-	const themeImages = ['home-paper.webp', 'home-inset.webp', 'welcome-look.webp'];
-
-	// What search engines read: the app, and the questions with their answers.
-	let structured = $derived(
-		JSON.stringify([
-			{
-				'@context': 'https://schema.org',
-				'@type': 'SoftwareApplication',
-				name: 'NuggetVPN',
-				alternateName: 'Nugget',
-				description: c.description,
-				url: SITE + PATHS[lang],
-				downloadUrl: RELEASES_URL,
-				applicationCategory: 'SecurityApplication',
-				operatingSystem: 'Windows, macOS, Linux, Android, iOS',
-				inLanguage: lang,
-				isAccessibleForFree: true,
-				license: 'https://www.gnu.org/licenses/gpl-3.0.html',
-				offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
-				screenshot: `${SITE}${c.screens}/home-connected.webp`,
-				author: { '@type': 'Organization', name: 'Rigby Foundation', url: REPO_URL }
-			},
-			{
-				'@context': 'https://schema.org',
-				'@type': 'FAQPage',
-				mainEntity: c.faq.map((item) => ({
-					'@type': 'Question',
-					name: item.q,
-					acceptedAnswer: { '@type': 'Answer', text: item.a }
-				}))
-			}
-		]).replace(/</g, '\\u003c')
+	const c = $derived(CONTENT[lang]);
+	const other = $derived(lang === 'en' ? 'ru' : 'en');
+	const screensDir = $derived(lang === 'en' ? '/screens' : '/screens/ru');
+	const canonical = $derived(SITE + PATHS[lang]);
+	const socialImage = $derived(SITE + (lang === 'en' ? '/og.png' : '/og-ru.png'));
+	const structure = $derived(
+		JSON.stringify({
+			'@context': 'https://schema.org',
+			'@type': 'SoftwareApplication',
+			name: 'Kage',
+			alternateName: 'NuggetVPN',
+			description: c.description,
+			url: canonical,
+			image: socialImage,
+			screenshot: SITE + screensDir + '/connected.webp',
+			operatingSystem: 'macOS, Windows, Linux, Android, iOS',
+			applicationCategory: 'SecurityApplication',
+			downloadUrl: RELEASES_URL,
+			license: LICENSE_URL,
+			offers: { '@type': 'Offer', price: 0, priceCurrency: 'USD' }
+		}).replaceAll('<', '\\u003c')
 	);
+
+	const screenIcons = { routing: GitBranch, servers: Layers, appearance: SlidersHorizontal };
+	const platformIcons = {
+		macos: Apple,
+		windows: Laptop,
+		linux: Terminal,
+		android: Bot,
+		ios: Smartphone
+	};
+	const featureIcons = [Link2, ShieldCheck, Layers];
+
+	let connected = $state(true);
+	let screen: Screen = $state('routing');
+	let routingPlay = $state(0);
+	let platform = $state<System>('macos');
+	let release: Release | null = $state(null);
+
+	const preview = $derived(c.preview.screens[screen]);
+	const command = $derived(
+		platform === 'windows'
+			? INSTALL_PS
+			: platform === 'macos' || platform === 'linux'
+				? INSTALL_SH
+				: undefined
+	);
+
+	function selectScreen(next: Screen) {
+		screen = next;
+		if (next === 'routing') routingPlay += 1;
+	}
+
+	onMount(() => {
+		document.documentElement.lang = lang;
+		platform = detectSystem(navigator) ?? 'macos';
+		void latestRelease().then((latest) => (release = latest));
+	});
 </script>
 
 <svelte:head>
 	<title>{c.title}</title>
 	<meta name="description" content={c.description} />
-	<link rel="canonical" href={SITE + PATHS[lang]} />
+	<link rel="canonical" href={canonical} />
 	<link rel="alternate" hreflang="en" href={SITE + PATHS.en} />
 	<link rel="alternate" hreflang="ru" href={SITE + PATHS.ru} />
 	<link rel="alternate" hreflang="x-default" href={SITE + PATHS.en} />
-
 	<meta property="og:type" content="website" />
-	<meta property="og:site_name" content="NuggetVPN" />
-	<meta property="og:url" content={SITE + PATHS[lang]} />
+	<meta property="og:site_name" content="Kage" />
 	<meta property="og:title" content={c.title} />
 	<meta property="og:description" content={c.description} />
-	<meta property="og:locale" content={c.ogLocale} />
-	<meta property="og:locale:alternate" content={CONTENT[other].ogLocale} />
-	<meta property="og:image" content="{SITE}/og.png" />
+	<meta property="og:url" content={canonical} />
+	<meta property="og:locale" content={lang === 'en' ? 'en_US' : 'ru_RU'} />
+	<meta property="og:locale:alternate" content={lang === 'en' ? 'ru_RU' : 'en_US'} />
+	<meta property="og:image" content={socialImage} />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
+	<meta property="og:image:alt" content={c.hero.connectedAlt} />
 	<meta name="twitter:card" content="summary_large_image" />
-	<meta name="twitter:title" content={c.title} />
-	<meta name="twitter:description" content={c.description} />
-	<meta name="twitter:image" content="{SITE}/og.png" />
-
-	<link rel="preload" as="image" href="{c.screens}/home-idle.webp" />
-	<!-- eslint-disable-next-line svelte/no-at-html-tags -->
-	{@html `<script type="application/ld+json">${structured}</script>`}
+	<link rel="preload" as="image" href={screensDir + '/connected.webp'} />
+	{@html `<script type="application/ld+json">${structure}</scr` + 'ipt>'}
 </svelte:head>
 
-<a
-	href="#main"
-	class="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-50 focus:rounded-lg focus:bg-gold focus:px-3 focus:py-2 focus:text-fryer"
->
-	{c.skip}
-</a>
+<a class="skip-link" href="#main">{c.skip}</a>
 
-<div class="relative min-h-screen overflow-x-clip" bind:this={root}>
-	<!-- How far down the page you are, in gold along the top. -->
-	<div data-m="bar" class="fixed inset-x-0 top-0 z-50 h-[3px] origin-left scale-x-0 bg-gold shadow-[0_0_12px_color-mix(in_oklab,var(--color-gold)_80%,transparent)]" aria-hidden="true"></div>
-	<!-- A warm spot that follows the pointer on desktops. -->
-	<div
-		data-m="cursor"
-		class="pointer-events-none fixed top-0 left-0 z-0 hidden h-[520px] w-[520px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-0 [background:radial-gradient(circle,color-mix(in_oklab,var(--color-gold)_14%,transparent),transparent_65%)] [@media(pointer:fine)]:block"
-		aria-hidden="true"
-	></div>
-	<div class="grain" aria-hidden="true"></div>
-
-	<!-- The fryer's warmth, which rises when the demo connects. -->
-	<div data-m="glow" class="pointer-events-none absolute inset-x-0 top-0 h-[1900px]" aria-hidden="true">
-		<div
-			class="h-full w-full transition-opacity duration-700"
-			style="opacity:{on ? 1 : 0.45}; background: radial-gradient(70% 45% at 50% 55%, color-mix(in oklab, var(--color-gold) 22%, transparent), transparent 70%)"
-		></div>
-	</div>
-
-	<header class="relative z-20 mx-auto flex max-w-6xl items-center justify-between px-5 py-5 sm:px-8">
-		<a href={PATHS[lang]} class="wordmark text-xl" aria-label={c.nav.home}>Nugget<span class="dot">.</span></a>
-		<nav aria-label="Main" class="flex items-center gap-1 text-sm text-ash sm:gap-2">
-			<a href="#screens" class="hidden rounded-lg px-3 py-2 transition-colors hover:text-batter md:block">{c.nav.screens}</a>
-			<a href="#details" class="hidden rounded-lg px-3 py-2 transition-colors hover:text-batter md:block">{c.nav.details}</a>
-			<a href="#download" class="rounded-lg px-3 py-2 transition-colors hover:text-batter">{c.nav.download}</a>
-			<ThemePicker {lang} strings={c.themes} />
-			<a href={PATHS[other]} hreflang={other} lang={other} class="rounded-lg px-3 py-2 transition-colors hover:text-batter">
-				{c.nav.other}
-			</a>
-			<a href={REPO_URL} class="flex items-center gap-1.5 rounded-lg px-3 py-2 transition-colors hover:text-batter" aria-label="GitHub">
-				<Github size={16} aria-hidden="true" /> <span class="hidden sm:inline">GitHub</span>
-			</a>
+<header class="site-header">
+	<div class="wrap nav-inner">
+		<a class="brand" href={PATHS[lang]} aria-label={c.nav.home}>
+			<img src="/icon.png" alt="" width="36" height="36" />
+			<span class="wordmark" aria-hidden="true"></span>
+		</a>
+		<nav class="nav-links" aria-label={c.nav.label}>
+			<a class="wide-nav" href="#screens">{c.nav.screens}</a>
+			<a class="wide-nav" href="#details">{c.nav.details}</a>
+			<a href="#download">{c.nav.download}</a>
 		</nav>
-	</header>
+		<div class="nav-tools">
+			<a
+				class="locale-link"
+				href={PATHS[other]}
+				lang={other}
+				hreflang={other}
+				title={c.nav.language}
+				aria-label={c.nav.language}>{other.toUpperCase()}</a
+			>
+			<ThemePicker {lang} label={c.nav.theme} />
+			<a class="icon-button github-link" href={REPO_URL} aria-label="GitHub" title="GitHub"
+				><Github size={19} /></a
+			>
+		</div>
+	</div>
+</header>
 
-	<main id="main" class="relative z-10">
-		<!-- Hero -->
-		<section class="mx-auto flex min-h-[calc(100svh-5rem)] max-w-4xl flex-col items-center justify-center px-5 pt-8 pb-24 text-center sm:px-8">
-			<div class="flex min-w-0 flex-col items-center">
-				<h1 class="font-display text-[2.6rem] leading-[1.04] font-semibold tracking-tight text-balance sm:text-6xl xl:text-7xl">
-					{#each c.hero.title.split(' ') as word, i (i)}<span class="-mb-[0.12em] inline-block overflow-hidden pb-[0.12em] align-bottom"
-							><span data-m="hero-word" class="inline-block">{word}{#if i === c.hero.title.split(' ').length - 1}<span
-										class="text-gold">.</span
-									>{/if}</span
-							></span
-						>{' '}{/each}
-				</h1>
-				<p data-m="hero-item" class="mt-7 max-w-xl text-lg leading-relaxed text-ash">{c.hero.lead}</p>
-
-				<div data-m="hero-item" class="mt-10 flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
-					<a
-						data-m="magnet"
-						href={heroFile ? fileUrl(heroFile) : '#download'}
-						class="shine inline-flex items-center gap-2.5 rounded-full bg-gold px-6 py-3.5 font-semibold text-fryer shadow-[0_10px_40px_-10px_color-mix(in_oklab,var(--color-gold)_70%,transparent)] transition-colors hover:bg-gold-hi"
+<main id="main">
+	<section class="hero">
+		<div class="wrap hero-grid">
+			<div class="hero-copy">
+				<a href="#migration" class="rename-link"
+					><span class="rename-mark" aria-hidden="true"><Route size={16} /></span>{c.hero.rename}</a
+				>
+				<h1>{c.hero.title}</h1>
+				<p class="hero-lead">{c.hero.lead}</p>
+				<div class="hero-actions">
+					<a class="button primary" href="#download"
+						><Download size={19} aria-hidden="true" />{c.download.title}</a
 					>
-						<Download size={18} aria-hidden="true" />
-						{c.hero.download[system]}
-					</a>
-					<a href="#download" class="inline-flex items-center gap-1.5 text-sm text-ash transition-colors hover:text-batter">
-						{c.hero.platforms} <ArrowDown size={14} aria-hidden="true" />
-					</a>
+					<a class="button quiet" href="#screens">{c.nav.screens}</a>
+				</div>
+				<p class="hero-note">{c.hero.supported}</p>
+			</div>
+
+			<div class="hero-visual" class:connected>
+				{#key connected}
+					<div class="hero-traces" aria-hidden="true">
+						<span><i></i></span><span><i></i></span><span><i></i></span>
+					</div>
+				{/key}
+				<figure class="hero-frame">
+					<figcaption class="frame-bar">
+						<span class="frame-brand"
+							><img src="/favicon.png" alt="" width="23" height="23" /> Kage</span
+						>
+						<div class="connection-switch" role="group" aria-label={c.hero.demo}>
+							<button type="button" onclick={() => (connected = false)} aria-pressed={!connected}
+								>{c.hero.idle}</button
+							>
+							<button type="button" onclick={() => (connected = true)} aria-pressed={connected}
+								><span class="connection-dot" aria-hidden="true"></span>{c.hero.connected}</button
+							>
+						</div>
+					</figcaption>
+					<div class="screen-stack connection-screen">
+						<img
+							class="hero-shot"
+							src={screensDir + '/connection.webp'}
+							alt={c.hero.idleAlt}
+							aria-hidden={connected}
+							class:active={!connected}
+							width="1120"
+							height="720"
+							fetchpriority="low"
+						/>
+						<img
+							class="hero-shot"
+							src={screensDir + '/connected.webp'}
+							alt={c.hero.connectedAlt}
+							aria-hidden={!connected}
+							class:active={connected}
+							width="1120"
+							height="720"
+							fetchpriority="high"
+						/>
+						<button
+							type="button"
+							class="connection-control"
+							aria-label={c.hero.toggle}
+							aria-pressed={connected}
+							onclick={() => (connected = !connected)}
+						>
+							{#if connected}<span class="connection-wave" aria-hidden="true"></span>{/if}
+						</button>
+					</div>
+				</figure>
+			</div>
+		</div>
+	</section>
+
+	<section class="section preview-section" id="screens">
+		<div class="wrap">
+			<div class="section-heading">
+				<h2>{c.preview.title}</h2>
+				<p>{c.preview.lead}</p>
+			</div>
+
+			<div class="preview-layout">
+				<div class="preview-options" role="group" aria-label={c.preview.title}>
+					{#each SCREENS as item (item)}
+						{@const Icon = screenIcons[item]}
+						<button
+							type="button"
+							class="preview-option"
+							aria-pressed={screen === item}
+							onclick={() => selectScreen(item)}
+						>
+							<span class="option-icon"><Icon size={21} aria-hidden="true" /></span>
+							<span>
+								<strong>{c.preview.screens[item].label}</strong>
+								<span>{c.preview.screens[item].title}</span>
+							</span>
+						</button>
+					{/each}
 				</div>
 
-				{#if system !== 'android' && system !== 'other'}
-					<div data-m="hero-item" class="mt-8 w-full max-w-md text-ash">
-						<p class="mb-2 text-xs">{c.hero.terminal}</p>
-						<CopyCommand command={heroCommand} strings={c.copy} />
-					</div>
-				{/if}
-			</div>
-		</section>
-
-		<!-- The app itself, big enough to press. -->
-		<section class="mx-auto max-w-5xl px-5 pb-28 sm:px-8 [perspective:1400px]">
-			<div data-m="demo" class="min-w-0">
-				<PressDemo bind:on screens={c.screens} strings={c.demo} />
-			</div>
-		</section>
-
-		<!-- Protocols -->
-		<section aria-label={c.protocolsLead} class="border-y border-seam bg-crust/60">
-			<div class="mx-auto max-w-6xl px-5 py-6 sm:px-8">
-				<ul class="flex flex-wrap justify-center gap-2">
-					{#each protocols as protocol (protocol)}
-						<li data-m="chip" class="rounded-full border border-seam bg-crust-hi px-3 py-1 font-mono text-[11px] text-batter">{protocol}</li>
-					{/each}
-				</ul>
-			</div>
-		</section>
-
-		<!-- Screens -->
-		<section id="screens" class="mx-auto max-w-6xl scroll-mt-8 px-5 py-24 sm:px-8">
-			<h2 data-m="title" class="max-w-2xl font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.screensTitle}</h2>
-			<p class="mt-4 max-w-xl text-ash">{c.screensLead}</p>
-
-			<div class="mt-16 space-y-24">
-				{#each c.showcase as row, i (row.title)}
-					{@const image = showcaseImages[i]}
-					<article
-						data-m="row"
-						data-side={i % 2 ? 'right' : 'left'}
-						class="grid grid-cols-[minmax(0,1fr)] items-center gap-10 {i % 2
-							? 'lg:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] lg:[&>figure]:order-2'
-							: 'lg:grid-cols-[minmax(0,7fr)_minmax(0,4fr)]'}"
-					>
-						<figure data-m="row-fig" class="overflow-hidden rounded-[12px]">
+				<figure class="preview-figure">
+					<div class="screen-stack">
+						{#each SCREENS as item (item)}
 							<img
-								data-m="row-img"
-								src="{c.screens}/{image.file}"
-								alt={row.alt}
-								width={image.width}
-								height={image.height}
+								src={screensDir + '/' + item + '.webp'}
+								alt={c.preview.screens[item].alt}
+								aria-hidden={screen !== item}
+								class:active={screen === item}
+								width="1120"
+								height="720"
 								loading="lazy"
-								class="block h-auto w-full rounded-[12px] shadow-[0_30px_80px_-40px_rgba(0,0,0,0.9)] ring-1 ring-white/10"
 							/>
-						</figure>
-						<div>
-							<h3 data-m="row-text" class="font-display text-2xl leading-snug font-semibold tracking-tight">{row.title}</h3>
-							<p data-m="row-text" class="mt-4 leading-relaxed text-ash">{row.text}</p>
-							<ul class="mt-6 space-y-2.5 text-sm">
-								{#each row.facts as fact (fact)}
-									<li data-m="row-text" class="flex gap-3">
-										<span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-gold" aria-hidden="true"></span>
-										<span>{fact}</span>
-									</li>
-								{/each}
-							</ul>
+						{/each}
+						{#if screen === 'routing'}
+							{#key routingPlay}
+								<RoutingSignals {lang} />
+							{/key}
+						{/if}
+					</div>
+					<figcaption aria-live="polite">
+						<p>{preview.text}</p>
+						<div class="preview-meta">
+							<small>{c.preview.examples}</small>
+							<a href={screensDir + '/' + screen + '.webp'}>{c.preview.fullSize}</a>
 						</div>
+					</figcaption>
+				</figure>
+			</div>
+		</div>
+	</section>
+
+	<section class="section details-section" id="details">
+		<div class="wrap">
+			<div class="section-heading">
+				<h2>{c.details.title}</h2>
+				<p>{c.details.intro}</p>
+			</div>
+			<div class="details-grid">
+				{#each c.details.items as feature, index (feature.title)}
+					{@const Icon = featureIcons[index]}
+					<article>
+						<Icon size={23} aria-hidden="true" />
+						<h3>{feature.title}</h3>
+						<p>{feature.text}</p>
 					</article>
 				{/each}
 			</div>
-
-			<!-- Looks -->
-			<div class="mt-28">
-				<h3 class="font-display text-2xl leading-snug font-semibold tracking-tight">{c.looks.title}</h3>
-				<p class="mt-4 max-w-2xl leading-relaxed text-ash">{c.looks.text}</p>
-				<div class="mt-10 grid gap-5 md:grid-cols-3">
-					{#each themeImages as file, i (file)}
-						<figure data-m="theme">
-							<img
-								src="{c.screens}/{file}"
-								alt={c.looks.alts[i]}
-								width="2360"
-								height="1520"
-								loading="lazy"
-								class="block h-auto w-full rounded-[10px] ring-1 ring-white/10"
-							/>
-							<figcaption class="mt-3 text-sm text-ash">{c.looks.labels[i]}</figcaption>
-						</figure>
-					{/each}
+			<aside id="migration" class="migration">
+				<div class="migration-icon"><img src="/icon.png" alt="" width="42" height="42" /></div>
+				<div>
+					<h3>{c.migration.title}</h3>
+					<p>{c.migration.text}</p>
 				</div>
+			</aside>
+		</div>
+	</section>
+
+	<section class="section downloads-section" id="download">
+		<div class="wrap">
+			<div class="section-heading">
+				<h2>{c.download.title}</h2>
+				<p>{c.download.intro}</p>
 			</div>
-		</section>
-
-		<!-- The loud part: what Nugget is, in letters too big for the screen. -->
-		<section aria-label={c.slogans.join(', ')} class="relative z-10 -my-4 -rotate-2 border-y-2 border-gold bg-fryer py-6 sm:py-10">
-			{#each [0, 1] as line (line)}
-				<div class="marquee [mask-image:none]" style="--marquee-speed:{line ? 46 : 38}s; --marquee-dir:{line ? 'reverse' : 'normal'}" aria-hidden="true">
-					<div data-m="slogan" class="marquee-track">
-						{#each [0, 1] as copy (copy)}
-							<p class="flex shrink-0 items-center font-display text-6xl leading-[1.1] font-bold tracking-tight whitespace-nowrap uppercase sm:text-8xl">
-								{#each c.slogans as slogan, i (slogan)}
-									<span class={(i + line) % 2 ? 'text-gold' : 'text-batter'}>{slogan}</span>
-									<span class="mx-6 text-gold sm:mx-10">✦</span>
-								{/each}
-							</p>
-						{/each}
-					</div>
-				</div>
-			{/each}
-		</section>
-
-		<!-- Details -->
-		<section id="details" class="scroll-mt-8 border-t border-seam bg-crust/40">
-			<div class="mx-auto max-w-6xl px-5 py-24 sm:px-8">
-				<h2 data-m="title" class="font-display text-3xl leading-tight font-semibold tracking-tight sm:text-4xl">{c.detailsTitle}</h2>
-				<dl class="mt-12 grid gap-x-12 gap-y-8 md:grid-cols-2">
-					{#each c.details as item (item.term)}
-						<div data-m="detail" class="grid grid-cols-[7.5rem_minmax(0,1fr)] gap-4 border-t border-seam pt-5">
-							<dt class="text-sm font-semibold text-gold">{item.term}</dt>
-							<dd class="text-sm leading-relaxed text-batter/85">{item.text}</dd>
-						</div>
-					{/each}
-				</dl>
-			</div>
-		</section>
-
-		<!-- Download: the one gold band -->
-		<section id="download" data-m="band" class="scroll-mt-0 bg-gold text-fryer">
-			<div class="mx-auto max-w-6xl px-5 py-24 sm:px-8">
-				<div class="flex flex-wrap items-end justify-between gap-6">
-					<h2 class="wordmark text-5xl sm:text-7xl" aria-label="{c.download.title}.">
-						<span class="-mb-[0.1em] inline-block overflow-hidden pb-[0.1em] align-bottom" aria-hidden="true"
-							><!-- Letters grouped by word, so a narrow screen breaks the line between words, not inside one. -->{#each `${c.download.title}.`.split(' ') as word, w (w)}{#if w > 0}{' '}{/if}<span class="inline-block whitespace-nowrap"
-									>{#each [...word] as letter, i (i)}<span data-m="dl-letter" class="inline-block">{letter}</span>{/each}</span
-								>{/each}</span
+			<div class="download-panel">
+				<div class="platforms" role="group" aria-label={c.download.choose}>
+					{#each PLATFORMS as item (item)}
+						{@const Icon = platformIcons[item]}
+						<button
+							type="button"
+							aria-pressed={platform === item}
+							onclick={() => (platform = item)}
 						>
-					</h2>
-					<p class="max-w-sm text-sm leading-relaxed">
-						{#if release?.version}{c.download.version(release.version)}{' '}{/if}{c.download.free}
-						<a href={RELEASES_URL} class="font-semibold underline underline-offset-4">{c.download.all}</a>
-					</p>
-				</div>
-
-				<div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
-					<!-- A system whose files the latest release lacks is left out. -->
-					{#each c.download.groups.filter((group) => !release || group.files.some((file) => release?.files[file.id])) as group (group.system)}
-						<div data-m="dl-card" class="rounded-2xl bg-fryer/[0.06] p-5 ring-1 ring-fryer/15">
-							<p class="font-display text-lg font-semibold">{group.system}</p>
-							<p class="text-xs opacity-70">{group.note}</p>
-							<ul class="mt-5 space-y-1.5">
-								{#each group.files.filter((file) => !release || release.files[file.id]) as file (file.id)}
-									<li>
-										<a
-											href={fileUrl(file.id)}
-											class="flex items-center justify-between gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors hover:bg-fryer hover:text-gold"
-										>
-											<span>{file.label}</span>
-											<span class="font-mono text-[10px] opacity-70">{fileSize(file.id)}</span>
-										</a>
-									</li>
-								{/each}
-							</ul>
-							{#if group.warning}
-								<p class="mt-4 flex gap-2 rounded-lg bg-fryer/10 p-3 text-xs leading-relaxed">
-									<span aria-hidden="true" class="font-semibold">!</span>
-									<span>{group.warning}</span>
-								</p>
-							{/if}
-						</div>
+							<Icon size={20} aria-hidden="true" />{PLATFORM_NAMES[item]}
+						</button>
 					{/each}
 				</div>
-
-				<div class="mt-10 grid gap-4 lg:grid-cols-2">
-					<div class="min-w-0">
-						<p class="mb-2 text-sm font-semibold">{c.download.ps}</p>
-						<CopyCommand command={INSTALL_PS} strings={c.copy} />
+				<div class="platform-content">
+					<div>
+						<h3>
+							{PLATFORM_NAMES[platform]}
+							{#if release}<span class="version">{release.version}</span>{/if}
+						</h3>
+						<p>{c.download.note[platform]}</p>
 					</div>
-					<div class="min-w-0">
-						<p class="mb-2 text-sm font-semibold">{c.download.sh}</p>
-						<CopyCommand command={INSTALL_SH} strings={c.copy} />
+					<div class="download-files">
+						{@render downloadFiles(PLATFORM_FILES[platform])}
+						{#if platform === 'windows'}
+							<details class="command windows-extras">
+								<summary
+									>{c.download.windowsExtras}<ChevronDown
+										size={16}
+										class="chevron"
+										aria-hidden="true"
+									/></summary
+								>
+								{@render downloadFiles(WINDOWS_EXTRAS)}
+							</details>
+						{/if}
 					</div>
+					{#if command}
+						<details class="command">
+							<summary
+								><Terminal size={17} aria-hidden="true" />{c.download.command}<ChevronDown
+									size={16}
+									class="chevron"
+									aria-hidden="true"
+								/></summary
+							>
+							<CopyCommand {command} strings={c.download.copy} />
+						</details>
+					{/if}
 				</div>
-				<p class="mt-4 max-w-2xl text-xs leading-relaxed opacity-75">{c.download.scripts}</p>
+				<a class="release-link" href={RELEASES_URL}
+					><Github size={17} aria-hidden="true" />{c.download.release}</a
+				>
 			</div>
-		</section>
+		</div>
+	</section>
 
-		<!-- FAQ -->
-		<section aria-labelledby="faq-title" class="mx-auto max-w-3xl px-5 py-24 sm:px-8">
-			<h2 data-m="title" id="faq-title" class="font-display text-3xl font-semibold tracking-tight">{c.faqTitle}</h2>
-			<div class="mt-10 divide-y divide-seam border-y border-seam">
-				{#each c.faq as item (item.q)}
-					<details data-m="faq" class="group py-5">
-						<summary class="flex cursor-pointer list-none items-center justify-between gap-6 font-medium [&::-webkit-details-marker]:hidden">
-							{item.q}
-							<span class="font-mono text-gold transition-transform group-open:rotate-45" aria-hidden="true">+</span>
-						</summary>
-						<p class="mt-3 leading-relaxed text-ash">{item.a}</p>
+	<section class="section faq-section" aria-labelledby="faq-title">
+		<div class="wrap faq-grid">
+			<div class="section-heading">
+				<CircleHelp size={25} aria-hidden="true" />
+				<h2 id="faq-title">{c.faq.title}</h2>
+			</div>
+			<div class="questions">
+				{#each c.faq.items as item (item.q)}
+					<details>
+						<summary>{item.q}<ChevronDown size={18} class="chevron" aria-hidden="true" /></summary>
+						<p>{item.a}</p>
 					</details>
 				{/each}
 			</div>
-		</section>
-	</main>
-
-	<footer class="relative z-10 border-t border-seam">
-		<div class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm text-ash sm:px-8">
-			<p><span class="wordmark text-batter">Nugget<span class="dot">.</span></span> {c.footer.by}</p>
-			<a href={REPO_URL} class="flex items-center gap-1.5 transition-colors hover:text-batter">
-				<Github size={16} aria-hidden="true" />
-				{c.footer.source}
-			</a>
 		</div>
-	</footer>
-</div>
+	</section>
+</main>
+
+<footer class="site-footer">
+	<div class="wrap footer-inner">
+		<div class="footer-brand">
+			<a class="brand" href={PATHS[lang]} aria-label={c.nav.home}>
+				<img src="/icon.png" alt="" width="36" height="36" />
+				<span class="wordmark" aria-hidden="true"></span>
+			</a>
+			<span>{c.footer.by}</span>
+		</div>
+		<div class="footer-links">
+			<a href={DOCS_URL}>{c.footer.docs}</a>
+			<a href={LICENSE_URL}>{c.footer.license}</a>
+			<a href={REPO_URL}><Github size={17} aria-hidden="true" />{c.footer.source}</a>
+		</div>
+	</div>
+</footer>
+
+{#snippet downloadFiles(ids: FileId[])}
+	<ul class="files" aria-label={c.download.files}>
+		{#each ids as id (id)}
+			{@const file = release?.files[id]}
+			<li>
+				<a class="file-link" href={file?.url ?? RELEASES_URL}>
+					<Download size={17} aria-hidden="true" />
+					<strong>{c.download.label[id]}</strong>
+					<small>{file ? formatSize(file.size, lang) : 'GitHub'}</small>
+				</a>
+			</li>
+		{/each}
+	</ul>
+{/snippet}

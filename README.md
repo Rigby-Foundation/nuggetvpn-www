@@ -1,70 +1,18 @@
-# NuggetVPN Website
+# Kage website
 
-<div align="center">
+The English and Russian landing pages for Kage, a free, open-source VPN and proxy client.
 
-![NuggetVPN Website Banner](static/icon.png) 
+[Website](https://nugget.rigby.lol/) · [Kage source and documentation](https://github.com/Rigby-Foundation/Kage) · [Releases](https://github.com/Rigby-Foundation/Kage/releases)
 
-**The official landing page for the NuggetVPN desktop client.**
+## Development
 
-A free VPN client for the subscription you already have.
+```sh
+bun install --frozen-lockfile
+bun run dev
+```
 
-[**Visit Website**](https://nugget.rigby-foundation.org/) | [**Main Application Repo**](https://github.com/Rigby-Foundation/nuggetvpn)
+Run `bun run check` for Svelte and TypeScript checks. Run `bun run build` to generate the static site in `build/`. GitHub Actions publishes that directory to GitHub Pages from `main`.
 
-</div>
+English and Russian copy live in `src/lib/content.ts`. The screenshots in `static/screens/` show the Kage 3.0.1 frontend with sample profiles and routing rules. The site reads download links from Kage’s latest GitHub release and uses the release page as a fallback.
 
----
-
-## About
-
-This repository hosts the source code for the NuggetVPN landing page. It is a single static page that shows the app as it is (every screenshot is the real app) and offers the right download for the visitor's system.
-
-Downloads are read from the latest GitHub release in the browser, so a new release needs no change here. Until GitHub answers, every link points at the releases page.
-
-## Tech Stack
-
-We use the bleeding edge of web development to ensure top performance and developer experience.
-
-* **Framework:** [SvelteKit](https://kit.svelte.dev/) (SSR + SSG)
-* **UI Library:** [Svelte 5](https://svelte.dev/) (Runes powered)
-* **Styling:** [Tailwind CSS](https://tailwindcss.com/)
-* **Language:** TypeScript
-* **Icons:** [Lucide Svelte](https://lucide.dev/)
-* **Fonts:** Unbounded (the wordmark and headings, as in the app), Onest (body), Martian Mono (commands)
-
-## Getting Started
-
-Follow these steps to run the website locally for development.
-
-### Prerequisites
-
-* **Node.js**: LTS version recommended (v18+).
-* **Bun**: LTS version recommended (v1.1.40+).
-
-### Installation
-
-1.  **Clone the repository:**
-
-    ```bash
-    git clone [https://github.com/Rigby-Foundation/nuggetvpn-www.git](https://github.com/Rigby-Foundation/nuggetvpn-www.git)
-    cd nuggetvpn-www
-    ```
-
-2.  **Install dependencies:**
-
-    ```bash
-    bun install
-    # or if you use pnpm:
-    # pnpm install
-    ```
-
-3.  **Start the development server:**
-
-    ```bash
-    bun run dev
-    ```
-
-4.  Open your browser and navigate to `http://localhost:5173`.
-
-## Project Structure
-
-A standard SvelteKit project layout with a focus on organization.
+The Kage application is distributed under the MPL-2.0. See [LICENSE](LICENSE) for the website source license.

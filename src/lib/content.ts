@@ -1,397 +1,348 @@
-/**
- * Every word on the page, in English and Russian.
- *
- * Russian is not an afterthought: most people looking for a client for their
- * VLESS or Hysteria2 subscription search in Russian, so the Russian page is
- * written for them, with its own title, description and screenshots.
- *
- * The page is written for people who just want their VPN to work, not for
- * people who know what a protocol is. The technical names stay in the title,
- * the description and the protocol strip, where search engines and the
- * curious find them.
- */
-import type { FileId } from './release';
+import type { FileId, System } from './release';
 
-export type Lang = 'en' | 'ru';
+export const SITE = 'https://nugget.rigby.lol';
+export const PATHS = { en: '/', ru: '/ru/' } as const;
+export type Lang = keyof typeof PATHS;
 
-export const SITE = 'https://nugget.rigby-foundation.org';
-export const PATHS: Record<Lang, string> = { en: '/', ru: '/ru/' };
+export const PLATFORMS = ['macos', 'windows', 'linux', 'android', 'ios'] as const;
+export const PLATFORM_NAMES: Record<System, string> = {
+	macos: 'macOS',
+	windows: 'Windows',
+	linux: 'Linux',
+	android: 'Android',
+	ios: 'iOS'
+};
+export const SCREENS = ['routing', 'servers', 'appearance'] as const;
+export type Screen = (typeof SCREENS)[number];
 
-export interface Content {
-	lang: Lang;
-	/** Where this language's screenshots are. */
-	screens: string;
+interface Content {
 	title: string;
 	description: string;
-	ogLocale: string;
 	skip: string;
-	nav: { screens: string; details: string; download: string; home: string; other: string };
+	nav: {
+		screens: string;
+		details: string;
+		download: string;
+		home: string;
+		theme: string;
+		language: string;
+		label: string;
+	};
 	hero: {
+		rename: string;
 		title: string;
 		lead: string;
-		download: Record<'windows' | 'macos' | 'linux' | 'android' | 'other', string>;
-		platforms: string;
-		terminal: string;
+		supported: string;
+		demo: string;
+		toggle: string;
+		idle: string;
+		connected: string;
+		idleAlt: string;
+		connectedAlt: string;
 	};
-	demo: {
-		altOff: string;
-		altOn: string;
-		connect: string;
-		disconnect: string;
-		captionOff: string;
-		captionOn: string;
+	preview: {
+		title: string;
+		lead: string;
+		examples: string;
+		fullSize: string;
+		screens: Record<Screen, { label: string; title: string; text: string; alt: string }>;
 	};
-	copy: { copy: string; copied: string; label: string };
-	themes: { button: string; site: string; light: string; dark: string; palette: string };
-	/** Not shown: names the protocol strip for screen readers. */
-	protocolsLead: string;
-	/** Shouted across the giant band between the screens and the details. */
-	slogans: string[];
-	screensTitle: string;
-	screensLead: string;
-	showcase: { title: string; text: string; alt: string; facts: string[] }[];
-	looks: { title: string; text: string; labels: string[]; alts: string[] };
-	detailsTitle: string;
-	details: { term: string; text: string }[];
+	details: { title: string; intro: string; items: { title: string; text: string }[] };
+	migration: { title: string; text: string };
 	download: {
 		title: string;
-		version: (v: string) => string;
-		free: string;
-		all: string;
-		groups: { system: string; note: string; files: { id: FileId; label: string }[]; warning?: string }[];
-		ps: string;
-		sh: string;
-		scripts: string;
+		intro: string;
+		choose: string;
+		release: string;
+		files: string;
+		command: string;
+		windowsExtras: string;
+		copy: { copy: string; copied: string; label: string };
+		note: Record<System, string>;
+		label: Record<FileId, string>;
 	};
-	faqTitle: string;
-	faq: { q: string; a: string }[];
-	footer: { by: string; source: string };
+	faq: { title: string; items: { q: string; a: string }[] };
+	footer: { by: string; source: string; docs: string; license: string };
 }
 
 const en: Content = {
-	lang: 'en',
-	screens: '/screens',
-	title: 'NuggetVPN: free VLESS, Reality and Hysteria2 VPN client for Windows, macOS and Linux',
+	title: 'Kage | Open-source VPN and proxy client',
 	description:
-		'A free app for the VPN you already have: a clean, one-button alternative to Happ, Hiddify and v2rayN for desktop. Paste the link your provider gave you and press one button. Works with VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC and WireGuard. For Windows, macOS, Linux and Android.',
-	ogLocale: 'en_US',
+		'Use your VPN subscription with Kage. Import a link or QR code, pick a server, and route traffic by app or domain. Free for macOS, Windows, Linux, Android, and iOS.',
 	skip: 'Skip to content',
-	nav: { screens: 'Screens', details: 'Details', download: 'Download', home: 'NuggetVPN home', other: 'Русский' },
+	nav: {
+		screens: 'Inside Kage',
+		details: 'Features',
+		download: 'Download',
+		home: 'Kage home',
+		theme: 'Site theme',
+		language: 'Русский',
+		label: 'Main navigation'
+	},
 	hero: {
-		title: 'A VPN app with just one button',
-		lead: 'NuggetVPN is a free app for the VPN you already have. Copy the link your VPN provider sent you, paste it in, press the big button. That’s all there is to it.',
-		download: {
-			windows: 'Download for Windows',
-			macos: 'Download for macOS',
-			linux: 'Download for Linux',
-			android: 'Download for Android',
-			other: 'Download'
-		},
-		platforms: 'Free for Windows, macOS, Linux and Android',
-		terminal: 'Comfortable with a terminal? Install with one command:'
+		rename: 'NuggetVPN is now Kage',
+		title: 'A VPN client that follows your rules.',
+		lead: 'Bring your own subscription or server link. Connect in one click, then decide which traffic goes through the tunnel.',
+		supported: 'Powered by Xray. Free and open source.',
+		demo: 'Connection preview',
+		toggle: 'Toggle the preview connection',
+		idle: 'Disconnected',
+		connected: 'Connected',
+		idleAlt:
+			'Kage’s Connection screen, disconnected, with an example Aurora subscription and a Helsinki server selected.',
+		connectedAlt:
+			'Kage’s Connection screen, connected to Helsinki, with example upload and download rates.'
 	},
-	demo: {
-		altOff: 'NuggetVPN’s home screen, not connected: a large connect button with Aurora VPN’s subscription and the Helsinki server below it.',
-		altOn: 'The same screen connected: the button filled in gold, the connected time, download and upload speeds, latency and the public IP.',
-		connect: 'Connect (demo)',
-		disconnect: 'Disconnect (demo)',
-		captionOff: 'Go on, press it.',
-		captionOn: 'You’re connected. That’s the whole app, really.'
-	},
-	copy: { copy: 'Copy', copied: 'Copied', label: 'Copy the command' },
-	themes: { button: 'Theme', site: 'This site', light: 'Light', dark: 'Dark', palette: 'Palettes' },
-	protocolsLead: 'Supported protocols',
-	slogans: ['Free', 'No account', 'No tracking', 'No ads', 'Open source', 'One button'],
-	screensTitle: 'One big button. Everything else only if you want it',
-	screensLead: 'Most days you’ll just press the button. Here’s what’s there when you need more.',
-	showcase: [
-		{
-			title: 'Pick a country, or let Nugget pick the fastest',
-			text: 'All your provider’s servers in one list, each with its flag and how quickly it answers. Leave it on Automatic and Nugget connects you to the quickest one.',
-			alt: 'The server list: Frankfurt, Amsterdam, Helsinki, Stockholm and Warsaw, each with its flag, address, protocol and ping.',
-			facts: [
-				'See which servers are fast before you connect',
-				'Test them all with one tap, star your favourites',
-				'Servers that won’t work are marked, with the reason why'
-			]
-		},
-		{
-			title: 'Choose which apps use the VPN',
-			text: 'Send Telegram and Discord through the VPN and leave everything else on your normal connection. It’s a picture you can read: apps and sites on the left, where they go on the right. Drag a line to change it.',
-			alt: 'The routing graph: Telegram, Discord and Spotify, and three domains, going through the VPN; addresses in Russia going direct.',
-			facts: [
-				'Choose by app, by website or by country',
-				'Through the VPN, on your normal connection, or blocked',
-				'See live which rule is handling what'
-			]
-		},
-		{
-			title: 'Always know how much you have left',
-			text: 'Data used, days left and your provider’s support link are right next to the button. When your provider has news, it shows at the top.',
-			alt: 'The home screen with a message from the provider at the top, and the subscription showing 35 GB of 186 GB used and 214 days left.',
-			facts: [
-				'Data and expiry date come straight from your provider',
-				'Hide a message once you’ve read it',
-				'Your server list keeps itself up to date'
-			]
+	preview: {
+		title: 'Inside Kage',
+		lead: 'From importing your first link to wiring up a custom routing setup.',
+		examples: 'Kage interface shown with sample data.',
+		fullSize: 'View full-size screenshot',
+		screens: {
+			routing: {
+				label: 'Routing',
+				title: 'Choose where traffic goes',
+				text: 'Wire rules to the tunnel, a direct connection, or a block. Match by domain, IP range, or app. Save setups and switch between them on a schedule.',
+				alt: 'Kage’s visual routing editor with example domain and IP rules wired to VPN, Direct, and Block.'
+			},
+			servers: {
+				label: 'Servers',
+				title: 'Keep your servers together',
+				text: 'Import subscriptions, individual server links, or QR codes. Browse server groups and check latency before choosing a server, or let Kage pick automatically.',
+				alt: 'Kage’s Profiles screen showing example servers grouped by region and an Aurora subscription.'
+			},
+			appearance: {
+				label: 'Appearance',
+				title: 'Make the app yours',
+				text: 'Follow your system theme, pick a preset, or create your own palette. You can also change fonts and page transitions.',
+				alt: 'Kage’s Appearance settings showing the theme picker in the light Frost preset.'
+			}
 		}
-	],
-	looks: {
-		title: 'Make it look like yours',
-		text: 'Over thirty themes, light and dark, or your own with a picture behind it. Change the colours, how round the corners are, how fast things move, and where the menu sits.',
-		labels: ['Paper', 'Violet, inset sidebar', 'First start'],
-		alts: [
-			'NuggetVPN in the light Paper theme.',
-			'NuggetVPN in the Violet theme with an inset sidebar.',
-			'The first-start setup, choosing a theme and where the navigation goes.'
+	},
+	details: {
+		title: 'What you can do with Kage',
+		intro:
+			'Kage runs Xray directly in the app and works with provider subscriptions and self-hosted servers.',
+		items: [
+			{
+				title: 'Use the protocol you already have',
+				text: 'Connect with VLESS (including REALITY and XTLS Vision), VMess, Trojan, Shadowsocks, Hysteria 2, WireGuard, SOCKS5, or HTTP.'
+			},
+			{
+				title: 'Control how you connect',
+				text: 'Configure DNS, proxy chains, automatic reconnect, and a kill switch. Check live Xray logs when you need to troubleshoot.'
+			},
+			{
+				title: 'Take your setup with you',
+				text: 'Export settings and profiles as a backup. Share routing setups as .vflow files or extend the desktop app with plugins.'
+			}
 		]
 	},
-	detailsTitle: 'The details',
-	details: [
-		{ term: 'Connecting', text: 'Press the button and Nugget finds the fastest server and connects, usually in under two seconds.' },
-		{ term: 'If it drops', text: 'Nugget reconnects by itself. Until it’s back, nothing leaves your computer unprotected.' },
-		{ term: 'Switching', text: 'Works with the exact same links as Happ, Hiddify, v2rayN or NekoRay. Paste your link, scan a QR code, or import config files with one click.' },
-		{ term: 'Stats', text: 'Live speed, a built-in speed test, and how much data each app used this week.' },
-		{ term: 'Updates', text: 'On Windows and macOS, Nugget updates itself and restarts. Nothing to download by hand.' },
-		{ term: 'Languages', text: 'فارسی, English, Русский, Українська, 中文 and 日本語.' },
-		{ term: 'Privacy', text: 'No account, no tracking. It only checks for updates and looks up your IP address, and you can turn both off.' },
-		{ term: 'Add-ons', text: 'Extra themes, fonts and ready-made settings. Each one only gets the access you give it.' },
-		{ term: 'Under the hood', text: 'sing-box, mihomo and Xray, all built in. You’ll never need to touch them, but you can switch in Settings.' },
-		{ term: 'Open source', text: 'All the code is on GitHub under the GPL-3.0, so anyone can check exactly what it does.' }
-	],
-	download: {
-		title: 'Get Nugget',
-		version: (v) => `Version ${v}.`,
-		free: 'Free, no account, nothing to sign up for.',
-		all: 'All versions',
-		groups: [
-			{
-				system: 'Windows',
-				note: '10 and 11, 64-bit',
-				files: [
-					{ id: 'windows-installer', label: 'Installer (recommended)' },
-					{ id: 'windows-silent', label: 'Silent installer' },
-					{ id: 'windows-zip', label: 'No-install .zip' }
-				]
-			},
-			{ system: 'macOS', note: 'Apple silicon and Intel', files: [{ id: 'macos-dmg', label: 'Disk image (.dmg)' }] },
-			{
-				system: 'Linux',
-				note: 'x86-64',
-				files: [
-					{ id: 'linux-deb', label: '.deb' },
-					{ id: 'linux-rpm', label: '.rpm' },
-					{ id: 'linux-appimage', label: 'AppImage' }
-				]
-			},
-			{ system: 'Android', note: '7.0 and newer', files: [{ id: 'android-apk', label: 'App (.apk)' }] },
-			{
-				system: 'iOS',
-				note: 'iPhone and iPad, 15 and newer',
-				files: [{ id: 'ios-ipa', label: 'Unsigned .ipa' }],
-				warning:
-					'For people who know how to sideload. It’s not on the App Store, so you install it yourself with a paid Apple developer account. With a free Apple ID it installs but won’t connect.'
-			}
-		],
-		ps: 'Windows, in PowerShell',
-		sh: 'macOS and Linux, in a terminal',
-		scripts: 'Both download the latest version from GitHub, check it hasn’t been tampered with, install it and open it. Run them again to update.'
+	migration: {
+		title: 'Coming from NuggetVPN?',
+		text: 'NuggetVPN is now Kage. On desktop, Kage moves the old data folder on first launch. On Android and iOS, export a backup from NuggetVPN and import it into Kage to transfer your profiles and settings.'
 	},
-	faqTitle: 'Questions',
-	faq: [
-		{
-			q: 'Is NuggetVPN a VPN service?',
-			a: 'No, it’s the app. The VPN itself comes from a provider you choose; after you pay, they usually send you a link. Paste that link into Nugget and it connects you.'
+	download: {
+		title: 'Download Kage',
+		intro: 'Choose your platform to see installers and package formats.',
+		choose: 'Choose a platform',
+		release: 'All release files on GitHub',
+		files: 'Downloads',
+		command: 'Install from the terminal',
+		windowsExtras: 'More Windows packages',
+		copy: { copy: 'Copy', copied: 'Copied', label: 'Copy install command' },
+		note: {
+			macos:
+				'The universal build works on both Apple silicon and Intel Macs. Open the DMG and drag Kage into Applications.',
+			windows: 'Choose x64 or ARM64 to match your PC’s processor.',
+			linux:
+				'Packages are available for x86-64. TUN DNS requires systemd-resolved with resolvectl.',
+			android:
+				'The APK supports ARM64 and x86-64 devices. Open it to install Kage and accept Android’s VPN prompt on first connection.',
+			ios: 'Requires iOS 15 or later. Sign the IPA with a provisioning profile that permits the Packet Tunnel Network Extension.'
 		},
-		{
-			q: 'Will it work with my VPN?',
-			a: 'Almost certainly. If your provider gave you a link to paste into an app (it often starts with https://, vless:// or ss://), Nugget can use it.'
-		},
-		{
-			q: 'Is NuggetVPN an alternative to Happ, Hiddify, v2rayN or NekoRay?',
-			a: 'Yes. Nugget is designed as a much simpler, one-button alternative to Happ, Hiddify, v2rayN and NekoRay for desktop. If your provider gave you a link or config for any of those apps, paste the exact same link into Nugget — your servers, traffic balance and expiry date will transfer seamlessly.'
-		},
-		{
-			q: 'Looking for a Happ alternative on PC or Windows?',
-			a: 'Happ is great on mobile, but if you want the same simple, one-tap experience on your computer, NuggetVPN is the ideal desktop companion. It uses the exact same VLESS, Reality and Hysteria2 subscription links without complicated setups.'
-		},
-		{
-			q: 'Is it free?',
-			a: 'Yes, completely. No ads, no account, no paid version. The code is open, so it stays that way.'
-		},
-		{
-			q: 'macOS says the app is damaged.',
-			a: 'It isn’t. macOS just doesn’t recognise the developer, so it blocks the app. Open Terminal, paste xattr -cr /Applications/NuggetVPN.app, press Return, and open the app again. Installing with the terminal command above avoids this.'
-		},
-		{
-			q: 'Why isn’t it on the App Store?',
-			a: 'Apple only lets VPN apps onto the App Store from registered companies with a paid developer account, and it removes VPN apps in some countries, Russia among them, when the government asks. So for now the iPhone version is a file you install yourself, which takes some know-how.'
+		label: {
+			'macos-dmg': 'Universal DMG',
+			'windows-x64': 'x64 installer',
+			'windows-arm64': 'ARM64 installer',
+			'windows-x64-silent': 'x64 silent installer',
+			'windows-arm64-silent': 'ARM64 silent installer',
+			'windows-x64-zip': 'x64 portable ZIP',
+			'windows-arm64-zip': 'ARM64 portable ZIP',
+			'linux-deb': 'DEB package',
+			'linux-rpm': 'RPM package',
+			'linux-appimage': 'AppImage',
+			'android-apk': 'APK',
+			'ios-ipa': 'Unsigned IPA'
 		}
-	],
-	footer: { by: 'by the Rigby Foundation, under the GPL-3.0.', source: 'Source on GitHub' }
+	},
+	faq: {
+		title: 'Common questions',
+		items: [
+			{
+				q: 'Do I need a VPN subscription?',
+				a: 'You need a subscription or an individual server configuration from your provider or your own server. Kage is the client that uses that configuration.'
+			},
+			{
+				q: 'Can I use the same link I use in Happ, Hiddify, or v2rayN?',
+				a: 'If the link uses a protocol Kage supports, you can paste it into Configs or import its QR code. Kage displays usage limits and expiry when your provider includes them.'
+			},
+			{
+				q: 'How do I connect for the first time?',
+				a: 'Open Configs, choose Add, and import your link or QR code. Choose a server or Automatic, then open Connection and press Connect. Approve your system’s VPN prompt when asked.'
+			},
+			{
+				q: 'What happens to traffic that matches no routing rule?',
+				a: 'Kage sends it to the default destination you set in Routing. You can choose the active VPN server, a direct connection, or a block.'
+			}
+		]
+	},
+	footer: {
+		by: 'By the Rigby Foundation',
+		source: 'Source on GitHub',
+		docs: 'Documentation',
+		license: 'MPL-2.0'
+	}
 };
 
 const ru: Content = {
-	lang: 'ru',
-	screens: '/screens/ru',
-	title: 'NuggetVPN: бесплатный VPN-клиент для VLESS, Reality и Hysteria2 на Windows, macOS и Linux',
+	title: 'Kage | VPN- и прокси-клиент с открытым исходным кодом',
 	description:
-		'Бесплатное приложение для VPN, который у вас уже есть: удобный аналог Happ, Hiddify и v2rayN для компьютера. Вставьте ссылку от провайдера и нажмите одну кнопку. VLESS + Reality, VMess, Trojan, Shadowsocks, Hysteria2, TUIC и WireGuard. Для Windows, macOS, Linux и Android.',
-	ogLocale: 'ru_RU',
+		'Подключайте свою VPN-подписку в Kage. Импортируйте ссылку или QR-код, выбирайте сервер и настраивайте маршруты по приложениям и доменам. Бесплатно для macOS, Windows, Linux, Android и iOS.',
 	skip: 'Перейти к содержанию',
-	nav: { screens: 'Экраны', details: 'Подробности', download: 'Скачать', home: 'NuggetVPN, главная', other: 'English' },
+	nav: {
+		screens: 'Интерфейс',
+		details: 'Возможности',
+		download: 'Скачать',
+		home: 'Kage, главная',
+		theme: 'Тема сайта',
+		language: 'English',
+		label: 'Основная навигация'
+	},
 	hero: {
-		title: 'VPN-приложение с одной кнопкой',
-		lead: 'NuggetVPN — бесплатное приложение для VPN, который у вас уже есть. Скопируйте ссылку, которую прислал ваш VPN-провайдер, вставьте её и нажмите большую кнопку. Больше ничего не нужно.',
-		download: {
-			windows: 'Скачать для Windows',
-			macos: 'Скачать для macOS',
-			linux: 'Скачать для Linux',
-			android: 'Скачать для Android',
-			other: 'Скачать'
-		},
-		platforms: 'Бесплатно для Windows, macOS, Linux и Android',
-		terminal: 'Умеете пользоваться терминалом? Установка одной командой:'
+		rename: 'NuggetVPN теперь называется Kage',
+		title: 'VPN-клиент по вашим правилам.',
+		lead: 'Добавьте свою подписку или ссылку на сервер. Подключитесь одним нажатием и решите, какой трафик направить через туннель.',
+		supported: 'На базе Xray. Бесплатно, с открытым кодом.',
+		demo: 'Предпросмотр подключения',
+		toggle: 'Переключить подключение в предпросмотре',
+		idle: 'Нет подключения',
+		connected: 'Подключено',
+		idleAlt:
+			'Экран подключения Kage. Туннель выключен, выбраны демонстрационная подписка Aurora и сервер в Хельсинки.',
+		connectedAlt:
+			'Экран подключения Kage с активным туннелем до Хельсинки и примером скорости загрузки и отправки.'
 	},
-	demo: {
-		altOff: 'Главный экран NuggetVPN без подключения: большая кнопка подключения, под ней подписка Aurora VPN и сервер в Хельсинки.',
-		altOn: 'Тот же экран после подключения: кнопка залита золотым, время подключения, скорость загрузки и отправки, задержка и внешний IP.',
-		connect: 'Подключиться (демо)',
-		disconnect: 'Отключиться (демо)',
-		captionOff: 'Давайте, нажмите.',
-		captionOn: 'Вы подключены. По сути, это всё приложение.'
-	},
-	copy: { copy: 'Копировать', copied: 'Скопировано', label: 'Скопировать команду' },
-	themes: { button: 'Тема', site: 'Этот сайт', light: 'Светлые', dark: 'Тёмные', palette: 'Палитры' },
-	protocolsLead: 'Поддерживаемые протоколы',
-	slogans: ['Бесплатно', 'Без аккаунта', 'Без слежки', 'Без рекламы', 'Открытый код', 'Одна кнопка'],
-	screensTitle: 'Одна большая кнопка. Всё остальное — если захотите',
-	screensLead: 'Обычно вы просто нажимаете кнопку. Вот что есть, когда нужно больше.',
-	showcase: [
-		{
-			title: 'Выберите страну — или пусть Nugget выберет самую быструю',
-			text: 'Все серверы провайдера одним списком, у каждого флаг и скорость ответа. Оставьте «Автоматически», и Nugget подключит вас к самому быстрому.',
-			alt: 'Список серверов: Франкфурт, Амстердам, Хельсинки, Стокгольм и Варшава, у каждого флаг, адрес, протокол и пинг.',
-			facts: [
-				'Видно, какие серверы быстрые, ещё до подключения',
-				'Проверка всех серверов одним нажатием, избранное',
-				'Серверы, которые не заработают, помечены — с причиной'
-			]
-		},
-		{
-			title: 'Решайте, какие приложения идут через VPN',
-			text: 'Пустите Telegram и Discord через VPN, а всё остальное оставьте на обычном интернете. Это понятная схема: слева приложения и сайты, справа — куда они идут. Проведите линию, чтобы изменить.',
-			alt: 'Схема маршрутизации: Telegram, Discord, Spotify и три домена идут через VPN, адреса в России — напрямую.',
-			facts: [
-				'По приложению, по сайту или по стране',
-				'Через VPN, через обычный интернет или заблокировать',
-				'В реальном времени видно, какое правило что обрабатывает'
-			]
-		},
-		{
-			title: 'Всегда видно, сколько осталось',
-			text: 'Расход трафика, сколько дней осталось и ссылка на поддержку провайдера — рядом с кнопкой. Когда у провайдера новости, они видны сверху.',
-			alt: 'Главный экран с сообщением провайдера сверху; подписка: использовано 35 ГБ из 186 ГБ, осталось 214 дней.',
-			facts: [
-				'Трафик и срок действия — прямо от провайдера',
-				'Прочитанное сообщение можно скрыть',
-				'Список серверов обновляется сам'
-			]
+	preview: {
+		title: 'Интерфейс Kage',
+		lead: 'От импорта первой ссылки до собственной схемы маршрутизации.',
+		examples: 'Данные на снимках экрана приведены для примера.',
+		fullSize: 'Открыть снимок целиком',
+		screens: {
+			routing: {
+				label: 'Маршрутизация',
+				title: 'Выбирайте, куда идёт трафик',
+				text: 'Направляйте трафик через туннель, напрямую или блокируйте его. Создавайте правила для доменов, диапазонов IP и приложений. Сохраняйте схемы и переключайте их по расписанию.',
+				alt: 'Визуальный редактор маршрутизации Kage. Правила для доменов и IP соединены с узлами VPN, прямого подключения и блокировки.'
+			},
+			servers: {
+				label: 'Серверы',
+				title: 'Все серверы в одном месте',
+				text: 'Импортируйте подписки, ссылки на отдельные серверы или QR-коды. Просматривайте группы, проверяйте задержку и выбирайте сервер вручную или автоматически.',
+				alt: 'Экран профилей Kage с демонстрационной подпиской Aurora и списком серверов по регионам.'
+			},
+			appearance: {
+				label: 'Оформление',
+				title: 'Настройте Kage под себя',
+				text: 'Используйте системную тему, выберите готовую или создайте свою палитру. Также можно менять шрифты и анимации переходов.',
+				alt: 'Настройки оформления Kage с выбором темы и активной светлой темой «Иней».'
+			}
 		}
-	],
-	looks: {
-		title: 'Сделайте его своим',
-		text: 'Больше тридцати тем, светлых и тёмных, или своя — с картинкой на фоне. Меняйте цвета, скругление углов, скорость анимаций и место, где находится меню.',
-		labels: ['Бумага', 'Фиолетовая, встроенная боковая панель', 'Первый запуск'],
-		alts: [
-			'NuggetVPN в светлой теме «Бумага».',
-			'NuggetVPN в фиолетовой теме со встроенной боковой панелью.',
-			'Первоначальная настройка: выбор темы и положения навигации.'
+	},
+	details: {
+		title: 'Что умеет Kage',
+		intro:
+			'Kage запускает Xray внутри приложения и работает с подписками провайдеров и собственными серверами.',
+		items: [
+			{
+				title: 'Подключение по знакомому протоколу',
+				text: 'Поддерживаются VLESS (включая REALITY и XTLS Vision), VMess, Trojan, Shadowsocks, Hysteria 2, WireGuard, SOCKS5 и HTTP.'
+			},
+			{
+				title: 'Управление подключением',
+				text: 'Настраивайте DNS, цепочки прокси, автоматическое переподключение и блокировку трафика при разрыве. Для диагностики доступны журналы Xray.'
+			},
+			{
+				title: 'Перенос настроек',
+				text: 'Сохраняйте резервные копии настроек и профилей. Делитесь схемами маршрутизации в формате .vflow и расширяйте настольное приложение плагинами.'
+			}
 		]
 	},
-	detailsTitle: 'Подробности',
-	details: [
-		{ term: 'Подключение', text: 'Нажмите кнопку — Nugget найдёт самый быстрый сервер и подключится, обычно меньше чем за две секунды.' },
-		{ term: 'Если отвалилось', text: 'Nugget переподключится сам. Пока связи нет, ничего не уйдёт с компьютера в обход VPN.' },
-		{ term: 'Переход', text: 'Работает с теми же ссылками, что и Happ, Hiddify, v2rayN или NekoRay: вставьте ссылку от провайдера, отсканируйте QR-код или откройте скриншот.' },
-		{ term: 'Статистика', text: 'Скорость в реальном времени, встроенный тест скорости и сколько трафика потратило каждое приложение за неделю.' },
-		{ term: 'Обновления', text: 'На Windows и macOS Nugget обновляется сам и перезапускается. Ничего не нужно скачивать вручную.' },
-		{ term: 'Языки', text: 'Русский, Українська, English, 中文, 日本語 и فارسی' },
-		{ term: 'Приватность', text: 'Без аккаунта и без слежки. Приложение только проверяет обновления и узнаёт ваш IP-адрес — и то и другое можно отключить.' },
-		{ term: 'Дополнения', text: 'Дополнительные темы, шрифты и готовые настройки. Каждое получает только тот доступ, который вы разрешили.' },
-		{ term: 'Внутри', text: 'sing-box, mihomo и Xray, все встроены. Трогать их не нужно, но переключиться можно в настройках.' },
-		{ term: 'Открытый код', text: 'Весь код на GitHub под лицензией GPL-3.0 — любой может проверить, что именно делает приложение.' }
-	],
-	download: {
-		title: 'Скачать Nugget',
-		version: (v) => `Версия ${v}.`,
-		free: 'Бесплатно, без аккаунта и регистрации.',
-		all: 'Все версии',
-		groups: [
-			{
-				system: 'Windows',
-				note: '10 и 11, 64-бит',
-				files: [
-					{ id: 'windows-installer', label: 'Установщик (рекомендуем)' },
-					{ id: 'windows-silent', label: 'Тихий установщик' },
-					{ id: 'windows-zip', label: '.zip без установки' }
-				]
-			},
-			{ system: 'macOS', note: 'Apple silicon и Intel', files: [{ id: 'macos-dmg', label: 'Образ диска (.dmg)' }] },
-			{
-				system: 'Linux',
-				note: 'x86-64',
-				files: [
-					{ id: 'linux-deb', label: '.deb' },
-					{ id: 'linux-rpm', label: '.rpm' },
-					{ id: 'linux-appimage', label: 'AppImage' }
-				]
-			},
-			{ system: 'Android', note: '7.0 и новее', files: [{ id: 'android-apk', label: 'Приложение (.apk)' }] },
-			{
-				system: 'iOS',
-				note: 'iPhone и iPad, 15 и новее',
-				files: [{ id: 'ios-ipa', label: 'Неподписанный .ipa' }],
-				warning:
-					'Для тех, кто умеет ставить приложения в обход App Store. Устанавливаете сами, с платным аккаунтом разработчика Apple. С бесплатным Apple ID приложение установится, но не подключится.'
-			}
-		],
-		ps: 'Windows, в PowerShell',
-		sh: 'macOS и Linux, в терминале',
-		scripts: 'Обе команды скачивают последнюю версию с GitHub, проверяют, что её никто не подменил, устанавливают и запускают. Запустите снова, чтобы обновиться.'
+	migration: {
+		title: 'Переходите с NuggetVPN?',
+		text: 'NuggetVPN теперь называется Kage. На компьютере Kage перенесёт папку данных при первом запуске. На Android и iOS экспортируйте резервную копию из NuggetVPN и импортируйте её в Kage, чтобы перенести профили и настройки.'
 	},
-	faqTitle: 'Вопросы',
-	faq: [
-		{
-			q: 'NuggetVPN — это VPN-сервис?',
-			a: 'Нет, это приложение. Сам VPN вы покупаете у провайдера, которого выбрали; после оплаты он обычно присылает ссылку. Вставьте её в Nugget — и он вас подключит.'
+	download: {
+		title: 'Скачать Kage',
+		intro: 'Выберите платформу, чтобы увидеть доступные установщики и пакеты.',
+		choose: 'Выбор платформы',
+		release: 'Все файлы релиза на GitHub',
+		files: 'Файлы для скачивания',
+		command: 'Установка из терминала',
+		windowsExtras: 'Другие пакеты Windows',
+		copy: { copy: 'Копировать', copied: 'Скопировано', label: 'Копировать команду установки' },
+		note: {
+			macos:
+				'Универсальная сборка для Mac с Apple silicon и Intel. Откройте DMG и перетащите Kage в папку «Программы».',
+			windows: 'Выберите x64 или ARM64 в зависимости от процессора.',
+			linux:
+				'Пакеты доступны для x86-64. Для DNS в режиме TUN нужны systemd-resolved и resolvectl.',
+			android:
+				'APK поддерживает ARM64 и x86-64. Откройте файл для установки Kage и при первом подключении разрешите создание VPN.',
+			ios: 'Требуется iOS 15 или новее. Подпишите IPA профилем с разрешением на расширение Packet Tunnel Network Extension.'
 		},
-		{
-			q: 'Он будет работать с моим VPN?',
-			a: 'Почти наверняка. Если провайдер дал ссылку, которую нужно вставить в приложение (часто она начинается с https://, vless:// или ss://), Nugget с ней справится.'
-		},
-		{
-			q: 'NuggetVPN — это аналог Happ, Hiddify, v2rayN или NekoRay?',
-			a: 'Да. Nugget — это удобный аналог и простая замена Happ, Hiddify, v2rayN и NekoRay для компьютера. Если провайдер прислал вам ссылку или ключ для любого из этих приложений, вставьте её в Nugget — все серверы, остаток трафика и срок действия перенесутся автоматически.'
-		},
-		{
-			q: 'Ищете Happ для ПК или Windows?',
-			a: 'Happ удобен на смартфонах, но на компьютере пользователям часто не хватает такой же простоты. NuggetVPN — это отличный аналог Happ на Windows, macOS и Linux: та же одна большая кнопка, те же ссылки от вашего провайдера (VLESS, Reality, Hysteria2) и никакой ручной возни.'
-		},
-		{
-			q: 'Это бесплатно?',
-			a: 'Да, полностью. Без рекламы, без аккаунта, без платной версии. Код открыт, так что так и останется.'
-		},
-		{
-			q: 'macOS пишет, что приложение повреждено.',
-			a: 'Оно не повреждено: macOS просто не знает разработчика и блокирует приложение. Откройте Терминал, вставьте xattr -cr /Applications/NuggetVPN.app, нажмите Return и откройте приложение снова. Если ставить командой выше, этой проблемы не будет.'
-		},
-		{
-			q: 'Почему его нет в App Store?',
-			a: 'Apple пускает VPN-приложения в App Store только от зарегистрированных компаний с платным аккаунтом разработчика и удаляет их в некоторых странах, в том числе в России, по требованию властей. Поэтому пока версия для iPhone — это файл, который вы устанавливаете сами, и для этого нужны определённые навыки.'
+		label: {
+			'macos-dmg': 'Универсальный DMG',
+			'windows-x64': 'Установщик x64',
+			'windows-arm64': 'Установщик ARM64',
+			'windows-x64-silent': 'Тихая установка x64',
+			'windows-arm64-silent': 'Тихая установка ARM64',
+			'windows-x64-zip': 'Портативный ZIP для x64',
+			'windows-arm64-zip': 'Портативный ZIP для ARM64',
+			'linux-deb': 'Пакет DEB',
+			'linux-rpm': 'Пакет RPM',
+			'linux-appimage': 'AppImage',
+			'android-apk': 'APK',
+			'ios-ipa': 'Неподписанный IPA'
 		}
-	],
-	footer: { by: 'от Rigby Foundation, под лицензией GPL-3.0.', source: 'Код на GitHub' }
+	},
+	faq: {
+		title: 'Частые вопросы',
+		items: [
+			{
+				q: 'Нужна ли VPN-подписка?',
+				a: 'Вам нужна подписка или конфигурация отдельного сервера. Её можно получить у провайдера или настроить на своём сервере. Kage подключается по этой конфигурации.'
+			},
+			{
+				q: 'Подойдёт ли моя ссылка из Happ, Hiddify или v2rayN?',
+				a: 'Если ссылка использует поддерживаемый протокол, вставьте её в разделе «Конфиги» или импортируйте QR-код. Kage покажет лимит трафика и срок действия, если провайдер передаёт эти данные.'
+			},
+			{
+				q: 'Как подключиться впервые?',
+				a: 'Откройте «Конфиги», нажмите «Добавить» и импортируйте ссылку или QR-код. Выберите сервер или автоматический режим, затем откройте экран подключения и нажмите «Подключить». Подтвердите системный запрос VPN.'
+			},
+			{
+				q: 'Куда идёт трафик, который не подходит ни под одно правило?',
+				a: 'Kage направляет его по маршруту по умолчанию. В настройках маршрутизации можно выбрать активный VPN-сервер, прямое подключение или блокировку.'
+			}
+		]
+	},
+	footer: {
+		by: 'От Rigby Foundation',
+		source: 'Код на GitHub',
+		docs: 'Документация',
+		license: 'MPL-2.0'
+	}
 };
 
 export const CONTENT: Record<Lang, Content> = { en, ru };

@@ -3,43 +3,30 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="theme-color" content="#15100b" />
+		<meta name="theme-color" content="#14111e" />
 		<script>
-			// The theme picked on the page last time, on before the first paint;
-			// see src/lib/themes.ts.
 			try {
-				var t = JSON.parse(localStorage.getItem('nugget-theme') || 'null');
-				if (t) {
-					var h = document.documentElement;
-					h.dataset.theme = t.mode;
-					h.style.setProperty('--t-bg', t.bg);
-					h.style.setProperty('--t-surface', t.surface);
-					h.style.setProperty('--t-accent', t.accent);
+				var theme = JSON.parse(localStorage.getItem('kage-theme') || 'null');
+				if (
+					theme &&
+					(theme.mode === 'light' || theme.mode === 'dark') &&
+					[theme.bg, theme.surface, theme.accent].every(function (color) {
+						return typeof color === 'string' && CSS.supports('color', color);
+					})
+				) {
+					var root = document.documentElement;
+					root.dataset.theme = theme.mode;
+					root.style.setProperty('--theme-bg', theme.bg);
+					root.style.setProperty('--theme-surface', theme.surface);
+					root.style.setProperty('--theme-accent', theme.accent);
+					document.querySelector('meta[name="theme-color"]').setAttribute('content', theme.bg);
 				}
-			} catch (e) {}
+			} catch {}
 		</script>
-		<script>
-			// Motion is set up before the first paint; see src/lib/motion.ts. If
-			// it never starts, show everything rather than leave the hero hidden.
-			if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
-				document.documentElement.classList.add('motion');
-				setTimeout(function () {
-					if (!window.__motionReady) document.documentElement.classList.remove('motion');
-				}, 2500);
-			}
-		</script>
-
-		<link rel="icon" href="%sveltekit.assets%/favicon.png" />
+		<link rel="icon" type="image/png" href="%sveltekit.assets%/favicon.png" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/icon.png" />
-		<link rel="preconnect" href="https://fonts.googleapis.com" />
-		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-		<link
-			rel="stylesheet"
-			href="https://fonts.googleapis.com/css2?family=Martian+Mono:wght@400;500&family=Onest:wght@400;500;600&family=Unbounded:wght@500;600;700&display=swap"
-		/>
 		%sveltekit.head%
 	</head>
-
 	<body data-sveltekit-preload-data="hover">
 		<div style="display: contents">%sveltekit.body%</div>
 	</body>

@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nugget.rigby-foundation.org/sitemap.xml
+Sitemap: https://nugget.rigby.lol/sitemap.xml

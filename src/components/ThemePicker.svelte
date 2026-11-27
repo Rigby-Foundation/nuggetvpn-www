@@ -1,84 +1,84 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Check, Palette } from 'lucide-svelte';
-
 	import type { Lang } from '$lib/content';
-	import { applyTheme, savedThemeId, THEMES, type Theme } from '$lib/themes';
+	import { applyTheme, DEFAULT_THEME, savedTheme, THEMES, type Theme } from '$lib/themes';
 
-	/** The app's themes, worn by the page. */
-	interface Strings {
-		button: string;
-		site: string;
-		light: string;
-		dark: string;
-		palette: string;
-	}
-	let { lang, strings }: { lang: Lang; strings: Strings } = $props();
-
-	let open = $state(false);
-	let current = $state('nugget');
+	let { lang, label }: { lang: Lang; label: string } = $props();
 	let root: HTMLElement;
+	let trigger: HTMLButtonElement;
+	let open = $state(false);
+	let selected = $state(DEFAULT_THEME);
+
+	const groups = [
+		{ id: 'site', en: 'Site default', ru: 'Тема сайта' },
+		{ id: 'dark', en: 'Dark', ru: 'Тёмные' },
+		{ id: 'light', en: 'Light', ru: 'Светлые' },
+		{ id: 'palette', en: 'Palettes', ru: 'Палитры' }
+	] as const;
 
 	onMount(() => {
-		current = savedThemeId();
-		const away = (e: PointerEvent) => {
-			if (open && !root.contains(e.target as Node)) open = false;
-		};
-		const escape = (e: KeyboardEvent) => {
-			if (open && e.key === 'Escape') open = false;
-		};
-		document.addEventListener('pointerdown', away);
-		document.addEventListener('keydown', escape);
-		return () => {
-			document.removeEventListener('pointerdown', away);
-			document.removeEventListener('keydown', escape);
-		};
+		const theme = savedTheme();
+		selected = theme.id;
+		applyTheme(theme);
 	});
 
-	function pick(theme: Theme) {
-		current = theme.id;
-		applyTheme(theme);
+	function close() {
+		open = false;
+		trigger.focus();
 	}
 
-	const groups = ['site', 'dark', 'light', 'palette'] as const;
+	function pick(theme: Theme) {
+		selected = theme.id;
+		applyTheme(theme);
+		close();
+	}
 </script>
 
-<div class="relative" bind:this={root}>
+<svelte:window
+	onpointerdown={(event) => {
+		if (open && event.target instanceof Node && !root.contains(event.target)) open = false;
+	}}
+	onkeydown={(event) => {
+		if (open && event.key === 'Escape') close();
+	}}
+/>
+
+<div class="theme-picker" bind:this={root}>
 	<button
+		class="icon-button"
 		type="button"
+		bind:this={trigger}
 		onclick={() => (open = !open)}
+		aria-label={label}
+		title={label}
 		aria-expanded={open}
-		aria-haspopup="true"
-		class="flex cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 transition-colors hover:text-batter"
+		aria-controls={open ? 'site-theme-options' : undefined}
 	>
-		<Palette size={16} aria-hidden="true" /> <span class="hidden sm:inline">{strings.button}</span>
+		<Palette size={19} aria-hidden="true" />
 	</button>
 
 	{#if open}
-		<div
-			class="absolute top-full right-0 z-50 mt-2 max-h-[70vh] w-64 overflow-y-auto rounded-2xl bg-crust p-2 text-batter shadow-[0_30px_60px_-20px_rgba(0,0,0,0.7)] ring-1 ring-seam"
-		>
-			{#each groups as group (group)}
-				<p class="px-2 pt-2 pb-1 text-[11px] font-semibold tracking-wide text-ash uppercase">{strings[group]}</p>
+		<div class="theme-options" id="site-theme-options">
+			{#each groups as group (group.id)}
+				<p>{group[lang]}</p>
 				<ul>
-					{#each THEMES.filter((t) => t.group === group) as theme (theme.id)}
+					{#each THEMES.filter((theme) => theme.group === group.id) as theme (theme.id)}
 						<li>
 							<button
 								type="button"
 								onclick={() => pick(theme)}
-								aria-pressed={current === theme.id}
-								class="flex w-full cursor-pointer items-center gap-3 rounded-lg px-2 py-1.5 text-left text-sm transition-colors hover:bg-crust-hi"
+								aria-pressed={selected === theme.id}
 							>
-								<!-- The page colour and surface, with the accent as a dot, like the app's picker. -->
 								<span
-									class="relative h-6 w-6 shrink-0 rounded-full ring-1 ring-white/15"
-									style="background: linear-gradient(135deg, {theme.bg} 50%, {theme.surface} 50%)"
+									class="swatch"
+									style:--swatch-bg={theme.bg}
+									style:--swatch-surface={theme.surface}
+									style:--swatch-accent={theme.accent}
 									aria-hidden="true"
-								>
-									<span class="absolute inset-[7px] rounded-full" style="background:{theme.accent}"></span>
-								</span>
-								<span class="flex-1">{theme.name[lang]}</span>
-								{#if current === theme.id}<Check size={14} class="text-gold" aria-hidden="true" />{/if}
+								></span>
+								<span>{theme.name[lang]}</span>
+								{#if selected === theme.id}<Check size={15} aria-hidden="true" />{/if}
 							</button>
 						</li>
 					{/each}
@@ -87,3 +87,65 @@
 		</div>
 	{/if}
 </div>
+
+<style>
+	.theme-picker {
+		position: relative;
+	}
+	.theme-options {
+		position: absolute;
+		z-index: 5;
+		inset-inline-end: 0;
+		top: calc(100% + 0.65rem);
+		width: 15rem;
+		max-height: min(68vh, 30rem);
+		overflow: auto;
+		padding: 0.4rem;
+		border: 1px solid var(--line-strong);
+		border-radius: 1rem;
+		background: var(--panel);
+		box-shadow: 0 1rem 2.5rem #0004;
+	}
+	p {
+		margin: 0;
+		padding: 0.65rem 0.55rem 0.35rem;
+		color: var(--muted);
+		font-size: 0.8125rem;
+	}
+	ul {
+		margin: 0;
+		padding: 0;
+		list-style: none;
+	}
+	li button {
+		display: grid;
+		grid-template-columns: auto 1fr auto;
+		align-items: center;
+		gap: 0.65rem;
+		width: 100%;
+		padding: 0.4rem 0.55rem;
+		border-radius: 0.5rem;
+		text-align: start;
+		font-size: 0.9rem;
+	}
+	li button:hover,
+	li button[aria-pressed='true'] {
+		background: var(--wash);
+	}
+	.swatch {
+		display: grid;
+		place-items: center;
+		width: 1.45rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		border: 1px solid var(--line-strong);
+		background: linear-gradient(135deg, var(--swatch-bg) 50%, var(--swatch-surface) 50%);
+	}
+	.swatch::after {
+		content: '';
+		width: 0.55rem;
+		aspect-ratio: 1;
+		border-radius: 50%;
+		background: var(--swatch-accent);
+	}
+</style>
